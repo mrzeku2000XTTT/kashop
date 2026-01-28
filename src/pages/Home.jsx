@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X, ArrowLeft, Settings as SettingsIcon, LogOut } from 'lucide-react';
+import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X, ArrowLeft, Settings as SettingsIcon, LogOut, Users } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -314,6 +314,15 @@ export default function Home() {
             </Button>
             <h2 className="text-white text-lg md:text-xl font-semibold">Kaspacom</h2>
             <span className="text-white/50 text-xs md:text-sm ml-auto">Kaspa Wallet & Onboarding</span>
+            <Button
+              onClick={() => window.open('https://wallet.kaspa.com/contacts', '_blank')}
+              variant="ghost"
+              size="icon"
+              className="text-white/70 hover:text-white hover:bg-white/5 rounded-full"
+              title="View Wallet Contacts"
+            >
+              <Users className="w-5 h-5" />
+            </Button>
           </div>
           <div className="flex-1 overflow-hidden">
             <iframe
