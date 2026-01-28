@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X, ArrowLeft } from 'lucide-react';
+import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X, ArrowLeft, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '../utils';
 
 export default function Home() {
+  const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [showBuyKas, setShowBuyKas] = useState(false);
@@ -178,7 +181,7 @@ export default function Home() {
               <a href="#docs" className="text-sm text-white/60 hover:text-white transition-colors">Docs</a>
             </motion.div>
 
-            {/* Cart and Connect Wallet Buttons */}
+            {/* Cart, Settings, and Connect Wallet Buttons */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -191,12 +194,19 @@ export default function Home() {
               >
                 <ShoppingCart className="w-5 h-5" />
               </Button>
-              
+
               {walletAddress ? (
                 <div className="flex items-center gap-3">
                   <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-mono">
                     {truncateAddress(walletAddress)}
                   </div>
+                  <Button
+                    onClick={() => navigate(createPageUrl('Settings'))}
+                    variant="ghost"
+                    className="text-white/70 hover:text-white hover:bg-white/5 rounded-full w-10 h-10 p-0"
+                  >
+                    <SettingsIcon className="w-5 h-5" />
+                  </Button>
                   <Button
                     onClick={disconnectWallet}
                     variant="ghost"
