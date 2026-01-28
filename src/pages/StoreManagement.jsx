@@ -161,27 +161,28 @@ export default function StoreManagement() {
               </Button>
             </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stores.map(store => (
-              <button
-                key={store.id}
-                onClick={() => setSelectedStore(store)}
-                className="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-[#49EACB]/30 transition text-left"
-              >
-                <h3 className="text-lg font-semibold text-white mb-2">{store.name}</h3>
-                {store.description && (
-                  <p className="text-white/60 text-sm">{store.description}</p>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {stores.length === 0 && !showCreateForm && (
-            <div className="text-center py-12 text-white/40">
-              <p>No stores yet. Create your first store to get started.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {stores.map(store => (
+                <button
+                  key={store.id}
+                  onClick={() => setSelectedStore(store)}
+                  className="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-[#49EACB]/30 transition text-left"
+                >
+                  <h3 className="text-lg font-semibold text-white mb-2">{store.name}</h3>
+                  {store.description && (
+                    <p className="text-white/60 text-sm">{store.description}</p>
+                  )}
+                </button>
+              ))}
             </div>
-          )}
-        </div>
+
+            {stores.length === 0 && (
+              <div className="text-center py-12 text-white/40">
+                <p>No stores yet. Create your first store to get started.</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
