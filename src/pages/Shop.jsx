@@ -20,15 +20,16 @@ export default function ShopPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const currentUser = await base44.auth.me();
-        if (currentUser) {
-          setUser(currentUser);
-          setUserEmail(currentUser.email);
-        } else {
+        const isAuthenticated = await base44.auth.isAuthenticated();
+        if (!isAuthenticated) {
           navigate('/');
+          return;
         }
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+        setUserEmail(currentUser.email);
       } catch (error) {
-        navigate('/');
+        console.error('Auth error:', error);
       }
     };
     checkAuth();
