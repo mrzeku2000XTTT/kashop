@@ -212,8 +212,8 @@ export default function Home() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-[#1a1a1a] border-white/10">
-                      <DropdownMenuItem onClick={() => navigate(createPageUrl('Shop'))} className="text-white cursor-pointer hover:bg-white/5">
-                        Shop
+                      <DropdownMenuItem onClick={() => navigate(createPageUrl('StoreManagement'))} className="text-white cursor-pointer hover:bg-white/5">
+                        My Stores
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => navigate(createPageUrl('Settings'))} className="text-white cursor-pointer hover:bg-white/5">
                         Account
