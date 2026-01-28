@@ -12,7 +12,6 @@ export default function StoreManagement() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', description: '' });
   const [selectedStore, setSelectedStore] = useState(null);
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
@@ -56,7 +55,7 @@ export default function StoreManagement() {
     },
   });
 
-  const handleSubmit = (data) => {
+  const handleCreateStore = (data) => {
     createMutation.mutate({
       name: data.name,
       description: data.description,
@@ -142,7 +141,7 @@ export default function StoreManagement() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {showCreateForm && (
           <StoreCreatorForm
-            onSubmit={handleSubmit}
+            onSubmit={handleCreateStore}
             onCancel={() => setShowCreateForm(false)}
             isLoading={createMutation.isPending}
           />
