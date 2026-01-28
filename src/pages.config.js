@@ -51,6 +51,7 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import StoreManagement from './pages/StoreManagement';
+import StoreProducts from './pages/StoreProducts';
 
 
 export const PAGES = {
@@ -58,6 +59,7 @@ export const PAGES = {
     "Settings": Settings,
     "Shop": Shop,
     "StoreManagement": StoreManagement,
+    "StoreProducts": StoreProducts,
 }
 
 export const pagesConfig = {
