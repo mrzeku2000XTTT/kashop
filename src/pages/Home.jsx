@@ -243,23 +243,23 @@ export default function Home() {
 
         {/* Subheader */}
         <div className="border-t border-white/5">
-          <div className="max-w-7xl mx-auto px-6 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6 text-sm text-white/50">
+          <div className="max-w-7xl mx-auto px-6 py-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="hidden sm:flex items-center gap-3 md:gap-6 text-xs md:text-sm text-white/50">
                 <a href="#products" className="hover:text-white transition-colors">Products</a>
                 <a href="#deals" className="hover:text-white transition-colors">Deals</a>
                 <a href="#categories" className="hover:text-white transition-colors">Categories</a>
               </div>
-              <div className="flex gap-3">
+              <div className="flex items-center gap-2 ml-auto">
                 <Button
                   onClick={() => setShowBuyKas(true)}
-                  className="bg-gradient-to-r from-orange-500 to-blue-500 hover:opacity-90 text-white font-medium px-6 py-2 rounded-full text-sm"
+                  className="bg-gradient-to-r from-orange-500 to-blue-500 hover:opacity-90 text-white font-medium px-3 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm whitespace-nowrap"
                 >
                   Buy KAS
                 </Button>
                 <Button
                   onClick={() => setShowKaspacom(true)}
-                  className="bg-white/5 hover:bg-white/10 border border-[#49EACB]/30 text-white rounded-full w-10 h-10 p-0 flex items-center justify-center"
+                  className="bg-white/5 hover:bg-white/10 border border-[#49EACB]/30 text-white rounded-full w-10 h-10 p-0 flex items-center justify-center flex-shrink-0"
                   title="Kaspacom"
                 >
                   <img 
