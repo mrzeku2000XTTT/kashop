@@ -128,6 +128,104 @@ export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
               </p>
             </div>
 
+            {/* Store Type */}
+            <div>
+              <label className="text-white text-sm font-medium block mb-4">
+                Store Type
+              </label>
+              <div className="space-y-3">
+                {[
+                  { value: 'physical', label: 'Physical products with delivery', icon: '📦' },
+                  { value: 'digital', label: 'Digital products', icon: '💾' },
+                  { value: 'both', label: 'Both physical & digital', icon: '🎯' }
+                ].map(option => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, storeType: option.value }))}
+                    className={`w-full p-4 rounded-lg border text-left transition ${
+                      formData.storeType === option.value
+                        ? 'border-[#49EACB] bg-[#49EACB]/10'
+                        : 'border-white/10 bg-white/5 hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{option.icon}</span>
+                      <span className="text-white font-medium">{option.label}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <p className="text-white/40 text-xs mt-2">
+                This helps us configure shipping and order flows
+              </p>
+            </div>
+
+            {/* Store Location */}
+            <div>
+              <label className="text-white text-sm font-medium block mb-3">
+                Store Location
+              </label>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <Input
+                    value={formData.country}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, country: e.target.value }));
+                      if (errors.country) setErrors(prev => ({ ...prev, country: '' }));
+                    }}
+                    placeholder="Country"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11"
+                  />
+                  {errors.country && (
+                    <p className="text-red-400 text-xs mt-1">{errors.country}</p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    value={formData.city}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, city: e.target.value }));
+                      if (errors.city) setErrors(prev => ({ ...prev, city: '' }));
+                    }}
+                    placeholder="City or Region"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11"
+                  />
+                  {errors.city && (
+                    <p className="text-red-400 text-xs mt-1">{errors.city}</p>
+                  )}
+                </div>
+              </div>
+              <p className="text-white/40 text-xs">
+                Used for delivery estimates and customer transparency
+              </p>
+            </div>
+
+            {/* Delivery Options */}
+            {formData.storeType !== 'digital' && (
+              <div>
+                <label className="text-white text-sm font-medium block mb-3">
+                  Delivery Options
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, offerDelivery: !prev.offerDelivery }))}
+                  className={`w-full p-4 rounded-lg border text-left transition flex items-center ${
+                    formData.offerDelivery
+                      ? 'border-[#49EACB] bg-[#49EACB]/10'
+                      : 'border-white/10 bg-white/5 hover:border-white/20'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded border-2 mr-3 flex items-center justify-center transition ${
+                    formData.offerDelivery ? 'bg-[#49EACB] border-[#49EACB]' : 'border-white/40'
+                  }`}>
+                    {formData.offerDelivery && <Check className="w-3 h-3 text-black" />}
+                  </div>
+                  <span className="text-white font-medium">I offer doorstep delivery</span>
+                </button>
+              </div>
+            )}
+
             {/* What You Get Section */}
             <div className="pt-8 border-t border-white/5">
               <h3 className="text-xl font-semibold mb-6">What You Get</h3>
