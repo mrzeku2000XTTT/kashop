@@ -38,8 +38,20 @@ export default function Home() {
 
   const connectWallet = () => {
     setIsConnecting(true);
-    if (window.KasperoPay) {
+    
+    // Check if KasperoPay is loaded
+    if (!window.KasperoPay) {
+      console.error('KasperoPay not loaded yet');
+      setIsConnecting(false);
+      return;
+    }
+
+    try {
+      // For wallet connection only (no merchant ID needed)
       window.KasperoPay.connect();
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+      setIsConnecting(false);
     }
   };
 
@@ -57,10 +69,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white overflow-hidden">
-      {/* Hidden KasperoPay container */}
+      {/* Hidden KasperoPay container - for wallet connection only, no merchant needed */}
       <div 
         id="kaspero-pay-button"
-        data-merchant="kpm_YOUR_MERCHANT_ID"
         style={{ display: 'none' }}
       />
 
