@@ -105,7 +105,7 @@ export default function Home() {
 
     try {
       window.KasperoPay.connect({
-        merchant: 'kpm_hocgtdnj',
+        merchant: 'kpm_vx7c48go',
         onConnect: function(user) {
           console.log('✅ Wallet connected!', user);
           if (user && user.address) {
@@ -150,7 +150,7 @@ export default function Home() {
       {/* KasperoPay widget container */}
       <div 
         id="kaspero-pay-button"
-        data-merchant="kpm_hocgtdnj"
+        data-merchant="kpm_vx7c48go"
         style={{ display: 'none' }}
       />
 
