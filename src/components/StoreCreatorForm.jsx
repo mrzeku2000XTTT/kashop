@@ -3,12 +3,14 @@ import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Check, AlertCircle } from 'lucide-react';
+import { Check, AlertCircle, Upload, X } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
   const [formData, setFormData] = useState({ 
     name: '', 
     description: '',
+    coverImage: '',
     storeType: 'physical',
     country: '',
     city: '',
@@ -16,6 +18,19 @@ export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
     storeName: ''
   });
   const [errors, setErrors] = useState({});
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        setFormData(prev => ({ ...prev, coverImage: file_url }));
+      } catch (error) {
+        console.error('Image upload failed:', error);
+        alert('Failed to upload image');
+      }
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -90,6 +105,40 @@ export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Store Cover Image */}
+            <div>
+              <label className="text-white text-sm font-medium block mb-3">
+                Store Cover Image
+              </label>
+              {formData.coverImage ? (
+                <div className="relative w-full h-48 rounded-lg overflow-hidden bg-white/5 border border-white/10">
+                  <img src={formData.coverImage} alt="Store cover" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, coverImage: '' }))}
+                    className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 p-2 rounded-full text-white transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="block w-full border-2 border-dashed border-white/20 rounded-lg p-8 hover:border-[#49EACB]/50 cursor-pointer transition text-center">
+                  <Upload className="w-8 h-8 text-white/40 mx-auto mb-2" />
+                  <p className="text-white/60">Click to upload store cover image</p>
+                  <p className="text-white/40 text-xs mt-1">PNG, JPG up to 5MB</p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </label>
+              )}
+              <p className="text-white/40 text-xs mt-2">
+                This will be displayed on your store page
+              </p>
+            </div>
+
             {/* Store Name */}
             <div>
               <label className="text-white text-sm font-medium block mb-2">
