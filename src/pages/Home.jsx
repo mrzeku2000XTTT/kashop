@@ -10,7 +10,7 @@ export default function Home() {
   useEffect(() => {
     // Load KasperoPay Connect widget script
     const script = document.createElement('script');
-    script.src = 'https://kaspa-store.com/connect/widget.js';
+    script.src = 'https://kaspa-store.com/connect/v1.js';
     script.async = true;
     
     script.onload = () => {
