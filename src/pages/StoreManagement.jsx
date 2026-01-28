@@ -56,6 +56,12 @@ export default function StoreManagement() {
   });
 
   const handleCreateStore = (data) => {
+    const generateMerchantId = () => {
+      const emailPart = userEmail.split('@')[0];
+      const timestamp = Date.now();
+      return `kpm_${emailPart}_${timestamp}`;
+    };
+
     createMutation.mutate({
       name: data.name,
       description: data.description,
@@ -63,6 +69,7 @@ export default function StoreManagement() {
       country: data.country,
       city: data.city,
       offerDelivery: data.offerDelivery,
+      merchantId: generateMerchantId(),
       ownerEmail: userEmail,
     });
   };
