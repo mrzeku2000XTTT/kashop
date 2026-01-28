@@ -13,7 +13,6 @@ export default function Home() {
   const [walletAddress, setWalletAddress] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [showBuyKas, setShowBuyKas] = useState(false);
-  const [showKaspacom, setShowKaspacom] = useState(false);
 
   useEffect(() => {
     // Load KasperoPay widget script
@@ -258,7 +257,7 @@ export default function Home() {
                   Buy KAS
                 </Button>
                 <Button
-                  onClick={() => setShowKaspacom(true)}
+                  onClick={() => navigate(createPageUrl('Kaspacom'))}
                   className="bg-white/5 hover:bg-white/10 border border-[#49EACB]/30 text-white rounded-full w-10 h-10 p-0 flex items-center justify-center"
                   title="Kaspacom"
                 >
@@ -300,31 +299,7 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      {/* Kaspacom Modal */}
-      <Dialog open={showKaspacom} onOpenChange={setShowKaspacom}>
-        <DialogContent className="w-screen h-screen max-w-full md:max-w-[95vw] md:w-[95vw] md:h-[95vh] p-0 bg-[#0a0a0a] border-white/10 flex flex-col md:rounded-lg overflow-hidden">
-          <DialogHeader className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-white/10 flex-shrink-0">
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={() => setShowKaspacom(false)}
-                variant="ghost"
-                size="icon"
-                className="text-white/70 hover:text-white hover:bg-white/5 rounded-full"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <DialogTitle className="text-white text-lg md:text-xl">Kaspacom</DialogTitle>
-            </div>
-          </DialogHeader>
-          <div className="flex-1 overflow-hidden">
-            <iframe
-              src="https://wallet.kaspa.com/onboarding"
-              className="w-full h-full border-0"
-              title="Kaspacom"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+
 
       {/* Hero Section */}
       <main className="relative z-10">
