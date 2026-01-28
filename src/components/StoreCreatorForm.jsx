@@ -24,6 +24,12 @@ export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
     if (!formData.name.trim()) {
       newErrors.name = 'Store name is required';
     }
+    if (!formData.country.trim()) {
+      newErrors.country = 'Country is required';
+    }
+    if (!formData.city.trim()) {
+      newErrors.city = 'City is required';
+    }
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
