@@ -52,6 +52,7 @@ import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import StoreManagement from './pages/StoreManagement';
 import StoreProducts from './pages/StoreProducts';
+import KCbridge from './pages/KCbridge';
 
 
 export const PAGES = {
@@ -60,6 +61,7 @@ export const PAGES = {
     "Shop": Shop,
     "StoreManagement": StoreManagement,
     "StoreProducts": StoreProducts,
+    "KCbridge": KCbridge,
 }
 
 export const pagesConfig = {

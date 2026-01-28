@@ -179,16 +179,17 @@ export default function Home() {
             </motion.div>
 
             {/* Navigation Links */}
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="hidden md:flex items-center gap-8"
-            >
-              <a href="#features" className="text-sm text-white/60 hover:text-white transition-colors">Features</a>
-              <a href="#about" className="text-sm text-white/60 hover:text-white transition-colors">About</a>
-              <a href="#docs" className="text-sm text-white/60 hover:text-white transition-colors">Docs</a>
-            </motion.div>
+             <motion.div 
+               initial={{ opacity: 0, y: -10 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ duration: 0.6, delay: 0.1 }}
+               className="hidden md:flex items-center gap-8"
+             >
+               <a href="#features" className="text-sm text-white/60 hover:text-white transition-colors">Features</a>
+               <a href="#about" className="text-sm text-white/60 hover:text-white transition-colors">About</a>
+               <a href="#docs" className="text-sm text-white/60 hover:text-white transition-colors">Docs</a>
+               <button onClick={() => navigate(createPageUrl('KCbridge'))} className="text-sm text-white/60 hover:text-white transition-colors">Categories</button>
+             </motion.div>
 
             {/* Cart, Settings, and Connect Wallet Buttons */}
             <motion.div
@@ -253,10 +254,10 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6 py-2">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 md:gap-6 text-xs md:text-sm text-white/50">
-                <a href="#products" className="hover:text-white transition-colors">Products</a>
-                <a href="#deals" className="hover:text-white transition-colors">Deals</a>
-                <a href="#categories" className="hover:text-white transition-colors">Categories</a>
-              </div>
+                 <a href="#products" className="hover:text-white transition-colors">Products</a>
+                 <a href="#deals" className="hover:text-white transition-colors">Deals</a>
+                 <button onClick={() => navigate(createPageUrl('KCbridge'))} className="hover:text-white transition-colors">Categories</button>
+               </div>
               <div className="flex items-center gap-2">
                 <Button
                   onClick={() => setShowBuyKas(true)}
