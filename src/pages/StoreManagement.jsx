@@ -98,7 +98,7 @@ export default function StoreManagement() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-white">Products</h2>
               <Button
-                onClick={() => navigate(createPageUrl('StoreProducts'))}
+                onClick={() => navigate(createPageUrl('StoreProducts') + `?storeId=${selectedStore.id}`)}
                 className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black"
               >
                 <Plus className="w-4 h-4 mr-2" />
