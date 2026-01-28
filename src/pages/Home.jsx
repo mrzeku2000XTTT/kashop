@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import WalletContactsModal from '../components/WalletContactsModal';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function Home() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [showBuyKas, setShowBuyKas] = useState(false);
   const [showKaspacom, setShowKaspacom] = useState(false);
+  const [showContacts, setShowContacts] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
     // Load KasperoPay widget script
@@ -43,6 +46,7 @@ export default function Home() {
           // Keystone user has email, we'll use that as identifier
           if (decoded.email) {
             setWalletAddress(decoded.email);
+            setUserEmail(decoded.email);
           }
         } catch (error) {
           console.error('Failed to decode token:', error);
@@ -60,6 +64,7 @@ export default function Home() {
             const decoded = jwtDecode(storedToken);
             if (decoded.email) {
               setWalletAddress(decoded.email);
+              setUserEmail(decoded.email);
             }
           } catch (error) {
             console.error('Failed to decode stored token:', error);
@@ -126,10 +131,12 @@ export default function Home() {
       }
       localStorage.removeItem('auth_token');
       setWalletAddress(null);
+      setUserEmail(null);
     } catch (error) {
       console.error('Disconnect error:', error);
       localStorage.removeItem('auth_token');
       setWalletAddress(null);
+      setUserEmail(null);
     }
   };
 
@@ -300,8 +307,16 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      {/* Kaspacom Modal */}
-      <Dialog open={showKaspacom} onOpenChange={setShowKaspacom}>
+      {/* Wallet Contacts Modal */}
+       {showContacts && userEmail && (
+         <WalletContactsModal
+           userEmail={userEmail}
+           onClose={() => setShowContacts(false)}
+         />
+       )}
+
+       {/* Kaspacom Modal */}
+       <Dialog open={showKaspacom} onOpenChange={setShowKaspacom}>
         <DialogContent className="w-screen h-screen max-w-full md:max-w-[95vw] md:w-[95vw] md:h-[95vh] p-0 bg-[#0a0a0a] border-white/10 flex flex-col md:rounded-lg overflow-hidden">
           <div className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-white/10 flex-shrink-0 flex items-center gap-3">
             <Button
@@ -314,15 +329,20 @@ export default function Home() {
             </Button>
             <h2 className="text-white text-lg md:text-xl font-semibold">Kaspacom</h2>
             <span className="text-white/50 text-xs md:text-sm ml-auto">Kaspa Wallet & Onboarding</span>
-            <Button
-              onClick={() => window.open('https://wallet.kaspa.com/contacts', '_blank')}
-              variant="ghost"
-              size="icon"
-              className="text-white/70 hover:text-white hover:bg-white/5 rounded-full"
-              title="View Wallet Contacts"
-            >
-              <Users className="w-5 h-5" />
-            </Button>
+            {walletAddress && (
+              <Button
+                onClick={() => {
+                  setShowKaspacom(false);
+                  setShowContacts(true);
+                }}
+                variant="ghost"
+                size="icon"
+                className="text-white/70 hover:text-white hover:bg-white/5 rounded-full"
+                title="View Wallet Contacts"
+              >
+                <Users className="w-5 h-5" />
+              </Button>
+            )}
           </div>
           <div className="flex-1 overflow-hidden">
             <iframe
