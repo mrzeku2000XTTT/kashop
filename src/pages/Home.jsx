@@ -243,11 +243,11 @@ export default function Home() {
 
       {/* Buy KAS Modal */}
       <Dialog open={showBuyKas} onOpenChange={setShowBuyKas}>
-        <DialogContent className="max-w-5xl h-[80vh] p-0 bg-[#0a0a0a] border-white/10">
+        <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-0 bg-[#0a0a0a] border-white/10">
           <DialogHeader className="px-6 pt-6 pb-4 border-b border-white/10">
             <DialogTitle className="text-white text-xl">Buy KAS</DialogTitle>
           </DialogHeader>
-          <div className="h-full pb-6 px-6">
+          <div className="flex-1 px-6 pb-6" style={{ height: 'calc(100% - 80px)' }}>
             <iframe
               src="https://kaspa-ng-62ab4fc0.base44.app"
               className="w-full h-full rounded-lg border border-white/10"
