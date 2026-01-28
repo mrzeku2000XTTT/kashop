@@ -50,12 +50,14 @@
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
+import StoreManagement from './pages/StoreManagement';
 
 
 export const PAGES = {
     "Home": Home,
     "Settings": Settings,
     "Shop": Shop,
+    "StoreManagement": StoreManagement,
 }
 
 export const pagesConfig = {
