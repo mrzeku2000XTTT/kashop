@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X } from 'lucide-react';
+import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X, ArrowLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { jwtDecode } from 'jwt-decode';
@@ -245,7 +245,17 @@ export default function Home() {
       <Dialog open={showBuyKas} onOpenChange={setShowBuyKas}>
         <DialogContent className="w-screen h-screen max-w-full md:max-w-[95vw] md:w-[95vw] md:h-[95vh] p-0 bg-[#0a0a0a] border-white/10 flex flex-col md:rounded-lg overflow-hidden">
           <DialogHeader className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-white/10 flex-shrink-0">
-            <DialogTitle className="text-white text-lg md:text-xl">Buy KAS</DialogTitle>
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setShowBuyKas(false)}
+                variant="ghost"
+                size="icon"
+                className="text-white/70 hover:text-white hover:bg-white/5 rounded-full"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <DialogTitle className="text-white text-lg md:text-xl">Buy KAS</DialogTitle>
+            </div>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">
             <iframe
