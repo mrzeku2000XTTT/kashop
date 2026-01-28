@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, ChevronRight, Shield, Zap, Globe } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { jwtDecode } from 'jwt-decode';
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState(null);
@@ -24,23 +25,40 @@ export default function Home() {
       if (keystoneConnected === 'true' && token) {
         console.log('Keystone OAuth callback detected');
         
-        // Wait for widget to initialize session, then check connection
-        setTimeout(() => {
-          if (window.KasperoPay && window.KasperoPay.isConnected && window.KasperoPay.isConnected()) {
-            const user = window.KasperoPay.getUser();
-            console.log('Connected user:', user);
-            if (user && user.address) {
-              setWalletAddress(user.address);
-            }
-          }
-          setIsConnecting(false);
+        // Store token
+        localStorage.setItem('auth_token', token);
+        
+        // Decode token to get user data
+        try {
+          const decoded = jwtDecode(token);
+          console.log('Decoded token:', decoded);
           
-          // Clean URL
-          window.history.replaceState({}, '', window.location.pathname);
-        }, 500);
+          // Keystone user has email, we'll use that as identifier
+          if (decoded.email) {
+            setWalletAddress(decoded.email);
+          }
+        } catch (error) {
+          console.error('Failed to decode token:', error);
+        }
+        
+        setIsConnecting(false);
+        
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname);
       } else {
         // Check if already connected (returning user)
-        if (window.KasperoPay && window.KasperoPay.isConnected && window.KasperoPay.isConnected()) {
+        const storedToken = localStorage.getItem('auth_token');
+        if (storedToken) {
+          try {
+            const decoded = jwtDecode(storedToken);
+            if (decoded.email) {
+              setWalletAddress(decoded.email);
+            }
+          } catch (error) {
+            console.error('Failed to decode stored token:', error);
+            localStorage.removeItem('auth_token');
+          }
+        } else if (window.KasperoPay && window.KasperoPay.isConnected && window.KasperoPay.isConnected()) {
           const user = window.KasperoPay.getUser();
           if (user && user.address) {
             setWalletAddress(user.address);
@@ -99,9 +117,11 @@ export default function Home() {
       if (window.KasperoPay && window.KasperoPay.disconnect) {
         window.KasperoPay.disconnect();
       }
+      localStorage.removeItem('auth_token');
       setWalletAddress(null);
     } catch (error) {
       console.error('Disconnect error:', error);
+      localStorage.removeItem('auth_token');
       setWalletAddress(null);
     }
   };
