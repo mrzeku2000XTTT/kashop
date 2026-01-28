@@ -176,12 +176,23 @@ export default function StoreManagement() {
                 <button
                   key={store.id}
                   onClick={() => setSelectedStore(store)}
-                  className="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-[#49EACB]/30 transition text-left"
+                  className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-[#49EACB]/30 transition text-left group"
                 >
-                  <h3 className="text-lg font-semibold text-white mb-2">{store.name}</h3>
-                  {store.description && (
-                    <p className="text-white/60 text-sm">{store.description}</p>
+                  {store.coverImage ? (
+                    <div className="relative w-full h-32 overflow-hidden bg-white/5">
+                      <img src={store.coverImage} alt={store.name} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                    </div>
+                  ) : (
+                    <div className="w-full h-32 bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center">
+                      <Package className="w-8 h-8 text-white/30" />
+                    </div>
                   )}
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">{store.name}</h3>
+                    {store.description && (
+                      <p className="text-white/60 text-sm line-clamp-2">{store.description}</p>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
