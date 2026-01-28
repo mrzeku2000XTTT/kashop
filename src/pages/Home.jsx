@@ -8,17 +8,17 @@ export default function Home() {
   const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
-    // Load KasperoPay Connect widget script
+    // Load KasperoPay widget script
     const script = document.createElement('script');
-    script.src = 'https://kaspa-store.com/connect/v1.js';
+    script.src = 'https://kaspa-store.com/pay/widget.js';
     script.async = true;
     
     script.onload = () => {
-      console.log('KasperoPay Connect widget loaded successfully');
+      console.log('KasperoPay widget loaded successfully');
       
       // Check if already connected
-      if (window.KasperoConnect && window.KasperoConnect.isConnected && window.KasperoConnect.isConnected()) {
-        const user = window.KasperoConnect.getUser();
+      if (window.KasperoPay && window.KasperoPay.isConnected && window.KasperoPay.isConnected()) {
+        const user = window.KasperoPay.getUser();
         if (user && user.address) {
           setWalletAddress(user.address);
         }
@@ -26,7 +26,7 @@ export default function Home() {
     };
     
     script.onerror = () => {
-      console.error('Failed to load KasperoPay Connect widget');
+      console.error('Failed to load KasperoPay widget');
       setIsConnecting(false);
     };
     
@@ -42,15 +42,16 @@ export default function Home() {
   const connectWallet = () => {
     setIsConnecting(true);
     
-    // Check if KasperoConnect is loaded
-    if (!window.KasperoConnect) {
-      console.error('KasperoConnect not loaded yet. Please refresh the page.');
+    // Check if KasperoPay is loaded
+    if (!window.KasperoPay) {
+      console.error('KasperoPay not loaded yet. Please refresh the page.');
       setIsConnecting(false);
       return;
     }
 
     try {
-      window.KasperoConnect.connect({
+      window.KasperoPay.connect({
+        merchant: 'kpm_vx7c48go',
         onConnect: function(user) {
           console.log('✅ Wallet connected!', user);
           if (user && user.address) {
@@ -60,10 +61,6 @@ export default function Home() {
         },
         onCancel: function() {
           console.log('❌ Connection cancelled');
-          setIsConnecting(false);
-        },
-        onError: function(error) {
-          console.error('Connection error:', error);
           setIsConnecting(false);
         }
       });
@@ -75,8 +72,8 @@ export default function Home() {
 
   const disconnectWallet = () => {
     try {
-      if (window.KasperoConnect && window.KasperoConnect.disconnect) {
-        window.KasperoConnect.disconnect();
+      if (window.KasperoPay && window.KasperoPay.disconnect) {
+        window.KasperoPay.disconnect();
       }
       setWalletAddress(null);
     } catch (error) {
@@ -92,12 +89,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white overflow-hidden">
-      {/* KasperoPay Connect widget container */}
+      {/* KasperoPay widget container */}
       <div 
-        id="kaspero-connect-button"
+        id="kaspero-pay-button"
         data-merchant="kpm_vx7c48go"
-        data-wallets="kasware,kastle,keystone,google,email"
-        data-theme="dark"
         style={{ display: 'none' }}
       />
 
