@@ -56,15 +56,10 @@ export default function StoreManagement() {
     },
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name) {
-      alert('Please enter a store name');
-      return;
-    }
+  const handleSubmit = (data) => {
     createMutation.mutate({
-      name: formData.name,
-      description: formData.description,
+      name: data.name,
+      description: data.description,
       ownerEmail: userEmail,
     });
   };
