@@ -92,10 +92,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white overflow-hidden">
-      {/* KasperoPay widget container - Change YOUR_MERCHANT_ID to your actual merchant ID from kaspa-store.com/merchant */}
+      {/* KasperoPay widget container */}
       <div 
         id="kaspero-pay-button"
-        data-merchant="YOUR_MERCHANT_ID"
+        data-merchant="kpm_vx7c48go"
         style={{ display: 'none' }}
       />
 
