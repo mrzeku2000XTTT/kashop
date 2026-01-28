@@ -140,55 +140,26 @@ export default function StoreManagement() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl text-white/80">Manage your stores</h2>
-            <Button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Store
-            </Button>
-          </div>
+        {showCreateForm && (
+          <StoreCreatorForm
+            onSubmit={handleSubmit}
+            onCancel={() => setShowCreateForm(false)}
+            isLoading={createMutation.isPending}
+          />
+        )}
 
-          {showCreateForm && (
-            <form onSubmit={handleSubmit} className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
-              <div>
-                <label className="text-white text-sm block mb-2">Store Name *</label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter store name"
-                  className="bg-white/5 border-white/10 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="text-white text-sm block mb-2">Description</label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Enter store description"
-                  className="bg-white/5 border-white/10 text-white"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black">
-                  Create Store
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => setShowCreateForm(false)}
-                  variant="ghost"
-                  className="text-white/60 hover:text-white"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          )}
+        {!showCreateForm && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl text-white/80">Manage your stores</h2>
+              <Button
+                onClick={() => setShowCreateForm(true)}
+                className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Store
+              </Button>
+            </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {stores.map(store => (
