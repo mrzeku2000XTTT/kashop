@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart } from 'lucide-react';
+import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { jwtDecode } from 'jwt-decode';
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [showBuyKas, setShowBuyKas] = useState(false);
 
   useEffect(() => {
     // Load KasperoPay widget script
@@ -218,7 +220,42 @@ export default function Home() {
             </motion.div>
           </div>
         </nav>
+
+        {/* Subheader */}
+        <div className="border-t border-white/5">
+          <div className="max-w-7xl mx-auto px-6 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6 text-sm text-white/50">
+                <a href="#products" className="hover:text-white transition-colors">Products</a>
+                <a href="#deals" className="hover:text-white transition-colors">Deals</a>
+                <a href="#categories" className="hover:text-white transition-colors">Categories</a>
+              </div>
+              <Button
+                onClick={() => setShowBuyKas(true)}
+                className="bg-gradient-to-r from-orange-500 to-blue-500 hover:opacity-90 text-white font-medium px-6 py-2 rounded-full text-sm"
+              >
+                Buy KAS
+              </Button>
+            </div>
+          </div>
+        </div>
       </header>
+
+      {/* Buy KAS Modal */}
+      <Dialog open={showBuyKas} onOpenChange={setShowBuyKas}>
+        <DialogContent className="max-w-5xl h-[80vh] p-0 bg-[#0a0a0a] border-white/10">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b border-white/10">
+            <DialogTitle className="text-white text-xl">Buy KAS</DialogTitle>
+          </DialogHeader>
+          <div className="h-full pb-6 px-6">
+            <iframe
+              src="https://kaspa-ng-62ab4fc0.base44.app"
+              className="w-full h-full rounded-lg border border-white/10"
+              title="Buy KAS"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Hero Section */}
       <main className="relative z-10">
