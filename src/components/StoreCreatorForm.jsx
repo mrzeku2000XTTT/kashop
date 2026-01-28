@@ -251,11 +251,58 @@ export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
               </div>
             </div>
 
+            {/* Store Preview */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.42 }}
+              className="bg-white/5 border border-white/10 rounded-lg p-4"
+            >
+              <p className="text-white/60 text-xs mb-1">Your store page will be available at</p>
+              <p className="text-[#49EACB] font-mono text-sm">kashop.io/{formData.name.toLowerCase().replace(/\s+/g, '-') || 'yourstore'}</p>
+            </motion.div>
+
+            {/* Payout Wallet */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.44 }}
+              className="bg-white/5 border border-white/10 rounded-lg p-4"
+            >
+              <p className="text-white text-sm font-medium mb-2">Payout Wallet</p>
+              <p className="text-white/70 text-sm">Connected via KasperoPay</p>
+              <p className="text-white/50 text-xs mt-1">Payments go directly to your wallet</p>
+            </motion.div>
+
+            {/* Next Steps */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.46 }}
+              className="bg-white/5 border border-white/10 rounded-lg p-4"
+            >
+              <p className="text-white text-sm font-medium mb-3">After creating your store, you'll be able to</p>
+              <ul className="space-y-2 text-sm text-white/70">
+                <li className="flex items-start gap-2">
+                  <span className="text-[#49EACB] mt-0.5">✓</span>
+                  <span>Add products and upload photos</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#49EACB] mt-0.5">✓</span>
+                  <span>Set prices in Kaspa</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#49EACB] mt-0.5">✓</span>
+                  <span>Start accepting orders</span>
+                </li>
+              </ul>
+            </motion.div>
+
             {/* Ownership Message */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.48 }}
               className="bg-[#49EACB]/5 border border-[#49EACB]/20 rounded-lg p-6 space-y-3"
             >
               <p className="font-semibold text-white">You own this store</p>
@@ -264,6 +311,19 @@ export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
                 <p>No hidden charges</p>
                 <p>Full control over your business</p>
               </div>
+            </motion.div>
+
+            {/* Trust & Safety */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="bg-white/5 border border-white/10 rounded-lg p-4 flex items-start gap-3"
+            >
+              <AlertCircle className="w-4 h-4 text-white/50 mt-0.5 flex-shrink-0" />
+              <p className="text-white/60 text-xs">
+                By creating a store, you agree to follow kaShop marketplace guidelines. We're committed to a safe, trustworthy community.
+              </p>
             </motion.div>
 
             {/* Actions */}
