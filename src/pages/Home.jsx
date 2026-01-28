@@ -12,27 +12,30 @@ export default function Home() {
     const script = document.createElement('script');
     script.src = 'https://kaspa-store.com/pay/widget.js';
     script.async = true;
-    document.body.appendChild(script);
-
-    // Listen for wallet connection events
-    const handleWalletConnect = (event) => {
-      if (event.detail?.address) {
-        setWalletAddress(event.detail.address);
-        setIsConnecting(false);
+    
+    script.onload = () => {
+      console.log('KasperoPay widget loaded successfully');
+      
+      // Check if already connected
+      if (window.KasperoPay && window.KasperoPay.isConnected && window.KasperoPay.isConnected()) {
+        const user = window.KasperoPay.getUser();
+        if (user && user.address) {
+          setWalletAddress(user.address);
+        }
       }
     };
-
-    const handleWalletDisconnect = () => {
-      setWalletAddress(null);
+    
+    script.onerror = () => {
+      console.error('Failed to load KasperoPay widget');
+      setIsConnecting(false);
     };
-
-    window.addEventListener('kaspero:wallet:connected', handleWalletConnect);
-    window.addEventListener('kaspero:wallet:disconnected', handleWalletDisconnect);
+    
+    document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
-      window.removeEventListener('kaspero:wallet:connected', handleWalletConnect);
-      window.removeEventListener('kaspero:wallet:disconnected', handleWalletDisconnect);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
@@ -41,14 +44,29 @@ export default function Home() {
     
     // Check if KasperoPay is loaded
     if (!window.KasperoPay) {
-      console.error('KasperoPay not loaded yet');
+      console.error('KasperoPay not loaded yet. Please refresh the page.');
       setIsConnecting(false);
       return;
     }
 
     try {
-      // For wallet connection only (no merchant ID needed)
-      window.KasperoPay.connect();
+      window.KasperoPay.connect({
+        onConnect: function(user) {
+          console.log('✅ Wallet connected!', user);
+          if (user && user.address) {
+            setWalletAddress(user.address);
+          }
+          setIsConnecting(false);
+        },
+        onCancel: function() {
+          console.log('❌ Connection cancelled');
+          setIsConnecting(false);
+        },
+        onError: function(error) {
+          console.error('Connection error:', error);
+          setIsConnecting(false);
+        }
+      });
     } catch (error) {
       console.error('Wallet connection error:', error);
       setIsConnecting(false);
@@ -56,10 +74,15 @@ export default function Home() {
   };
 
   const disconnectWallet = () => {
-    if (window.KasperoPay) {
-      window.KasperoPay.disconnect();
+    try {
+      if (window.KasperoPay && window.KasperoPay.disconnect) {
+        window.KasperoPay.disconnect();
+      }
+      setWalletAddress(null);
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      setWalletAddress(null);
     }
-    setWalletAddress(null);
   };
 
   const truncateAddress = (address) => {
@@ -69,9 +92,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white overflow-hidden">
-      {/* Hidden KasperoPay container - for wallet connection only, no merchant needed */}
+      {/* KasperoPay widget container - Change YOUR_MERCHANT_ID to your actual merchant ID from kaspa-store.com/merchant */}
       <div 
         id="kaspero-pay-button"
+        data-merchant="YOUR_MERCHANT_ID"
         style={{ display: 'none' }}
       />
 
