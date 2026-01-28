@@ -206,10 +206,12 @@ export default function Home() {
                 <Button
                   onClick={connectWallet}
                   disabled={isConnecting}
-                  className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-medium px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-[#49EACB]/20"
+                  className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-medium md:px-6 px-3 py-2.5 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-[#49EACB]/20"
                 >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                  <Wallet className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">
+                    {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                  </span>
                 </Button>
               )}
             </motion.div>
@@ -265,10 +267,12 @@ export default function Home() {
                 <Button
                   onClick={connectWallet}
                   disabled={isConnecting}
-                  className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-[#49EACB]/25 hover:scale-105"
+                  className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold md:px-8 px-6 py-6 md:text-lg text-base rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-[#49EACB]/25 hover:scale-105"
                 >
-                  <Wallet className="w-5 h-5 mr-2" />
-                  {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                  <Wallet className="w-5 h-5 md:mr-2" />
+                  <span className="hidden md:inline">
+                    {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                  </span>
                 </Button>
               ) : (
                 <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-[#49EACB]/30">
