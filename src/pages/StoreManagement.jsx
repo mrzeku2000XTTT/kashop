@@ -59,6 +59,10 @@ export default function StoreManagement() {
     createMutation.mutate({
       name: data.name,
       description: data.description,
+      storeType: data.storeType,
+      country: data.country,
+      city: data.city,
+      offerDelivery: data.offerDelivery,
       ownerEmail: userEmail,
     });
   };
