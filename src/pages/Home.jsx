@@ -8,6 +8,27 @@ export default function Home() {
   const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
+    // Handle Keystone OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    const keystoneConnected = params.get('keystone_connected');
+    const token = params.get('token');
+
+    if (keystoneConnected === 'true' && token) {
+      console.log('Keystone OAuth callback detected');
+      setIsConnecting(false);
+      
+      // Check for connected user
+      if (window.KasperoPay && window.KasperoPay.isConnected && window.KasperoPay.isConnected()) {
+        const user = window.KasperoPay.getUser();
+        if (user && user.address) {
+          setWalletAddress(user.address);
+        }
+      }
+      
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
     // Load KasperoPay widget script
     const script = document.createElement('script');
     script.src = 'https://kaspa-store.com/pay/widget.js';
