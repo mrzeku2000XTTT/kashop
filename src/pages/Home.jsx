@@ -350,6 +350,8 @@ export default function Home() {
               src="https://wallet.kaspa.com/onboarding"
               className="w-full h-full border-0"
               title="Kaspacom"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation allow-top-navigation-by-user-activation"
+              allow="clipboard-read; clipboard-write"
             />
           </div>
         </DialogContent>
