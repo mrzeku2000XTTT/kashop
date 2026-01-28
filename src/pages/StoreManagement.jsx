@@ -40,10 +40,11 @@ export default function StoreManagement() {
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Store.create(data),
-    onSuccess: () => {
+    onSuccess: (newStore) => {
       queryClient.invalidateQueries({ queryKey: ['stores', userEmail] });
       setFormData({ name: '', description: '' });
       setShowCreateForm(false);
+      setSelectedStore(newStore);
     },
   });
 
