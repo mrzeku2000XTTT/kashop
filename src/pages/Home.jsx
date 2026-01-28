@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X, ArrowLeft, Settings as SettingsIcon } from 'lucide-react';
+import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart, X, ArrowLeft, Settings as SettingsIcon, LogOut } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -200,20 +201,28 @@ export default function Home() {
                   <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-mono">
                     {truncateAddress(walletAddress)}
                   </div>
-                  <Button
-                    onClick={() => navigate(createPageUrl('Settings'))}
-                    variant="ghost"
-                    className="text-white/70 hover:text-white hover:bg-white/5 rounded-full w-10 h-10 p-0"
-                  >
-                    <SettingsIcon className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    onClick={disconnectWallet}
-                    variant="ghost"
-                    className="text-white/60 hover:text-white hover:bg-white/5"
-                  >
-                    Disconnect
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="text-white/70 hover:text-white hover:bg-white/5 rounded-full w-10 h-10 p-0"
+                      >
+                        <SettingsIcon className="w-5 h-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-[#1a1a1a] border-white/10">
+                      <DropdownMenuItem onClick={() => navigate(createPageUrl('Settings'))} className="text-white cursor-pointer hover:bg-white/5">
+                        Shop
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(createPageUrl('Settings'))} className="text-white cursor-pointer hover:bg-white/5">
+                        Account
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={disconnectWallet} className="text-red-400 cursor-pointer hover:bg-red-500/10">
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ) : (
                 <Button
