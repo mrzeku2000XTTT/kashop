@@ -303,19 +303,18 @@ export default function Home() {
       {/* Kaspacom Modal */}
       <Dialog open={showKaspacom} onOpenChange={setShowKaspacom}>
         <DialogContent className="w-screen h-screen max-w-full md:max-w-[95vw] md:w-[95vw] md:h-[95vh] p-0 bg-[#0a0a0a] border-white/10 flex flex-col md:rounded-lg overflow-hidden">
-          <DialogHeader className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-white/10 flex-shrink-0">
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={() => setShowKaspacom(false)}
-                variant="ghost"
-                size="icon"
-                className="text-white/70 hover:text-white hover:bg-white/5 rounded-full"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <DialogTitle className="text-white text-lg md:text-xl">Kaspacom</DialogTitle>
-            </div>
-          </DialogHeader>
+          <div className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-white/10 flex-shrink-0 flex items-center gap-3">
+            <Button
+              onClick={() => setShowKaspacom(false)}
+              variant="ghost"
+              size="icon"
+              className="text-white/70 hover:text-white hover:bg-white/5 rounded-full"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h2 className="text-white text-lg md:text-xl font-semibold">Kaspacom</h2>
+            <span className="text-white/50 text-xs md:text-sm ml-auto">Kaspa Wallet & Onboarding</span>
+          </div>
           <div className="flex-1 overflow-hidden">
             <iframe
               src="https://wallet.kaspa.com/onboarding"
