@@ -6,7 +6,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Check, AlertCircle } from 'lucide-react';
 
 export default function StoreCreatorForm({ onSubmit, onCancel, isLoading }) {
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    description: '',
+    storeType: 'physical',
+    country: '',
+    city: '',
+    offerDelivery: true,
+    storeName: ''
+  });
   const [errors, setErrors] = useState({});
 
   const handleSubmit = (e) => {
