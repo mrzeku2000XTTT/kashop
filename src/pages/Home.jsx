@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ChevronRight, Shield, Zap, Globe } from 'lucide-react';
+import { Wallet, ChevronRight, Shield, Zap, Globe, ShoppingCart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { jwtDecode } from 'jwt-decode';
 
@@ -160,7 +160,7 @@ export default function Home() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#49EACB] to-[#49EACB]/60 flex items-center justify-center">
                 <span className="text-black font-bold text-lg">K</span>
               </div>
-              <span className="text-xl font-semibold tracking-tight">Kaspero</span>
+              <span className="text-xl font-semibold tracking-tight">KaShop</span>
             </motion.div>
 
             {/* Navigation Links */}
@@ -175,12 +175,20 @@ export default function Home() {
               <a href="#docs" className="text-sm text-white/60 hover:text-white transition-colors">Docs</a>
             </motion.div>
 
-            {/* Connect Wallet Button */}
+            {/* Cart and Connect Wallet Buttons */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
+              className="flex items-center gap-3"
             >
+              <Button
+                variant="ghost"
+                className="text-white/70 hover:text-white hover:bg-white/5 rounded-full w-10 h-10 p-0"
+              >
+                <ShoppingCart className="w-5 h-5" />
+              </Button>
+              
               {walletAddress ? (
                 <div className="flex items-center gap-3">
                   <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-mono">
@@ -326,7 +334,7 @@ export default function Home() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#49EACB] to-[#49EACB]/60 flex items-center justify-center">
                 <span className="text-black font-bold text-sm">K</span>
               </div>
-              <span className="text-sm text-white/40">© 2025 Kaspero. All rights reserved.</span>
+              <span className="text-sm text-white/40">© 2025 KaShop. All rights reserved.</span>
             </div>
             <div className="flex items-center gap-6">
               <a href="#" className="text-sm text-white/40 hover:text-white transition-colors">Privacy</a>
