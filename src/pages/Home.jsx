@@ -95,7 +95,7 @@ export default function Home() {
 
   const connectWallet = () => {
     setIsConnecting(true);
-    
+
     // Check if KasperoPay is loaded
     if (!window.KasperoPay) {
       console.error('KasperoPay not loaded yet. Please refresh the page.');
@@ -110,6 +110,16 @@ export default function Home() {
           console.log('✅ Wallet connected!', user);
           if (user && user.address) {
             setWalletAddress(user.address);
+            setUserEmail(user.address);
+
+            // Persist connection state
+            if (user.token) {
+              localStorage.setItem('auth_token', user.token);
+            } else if (user.address) {
+              // Create a basic token if not provided
+              const basicToken = btoa(JSON.stringify({ address: user.address, email: user.address, timestamp: Date.now() }));
+              localStorage.setItem('auth_token', basicToken);
+            }
           }
           setIsConnecting(false);
         },
