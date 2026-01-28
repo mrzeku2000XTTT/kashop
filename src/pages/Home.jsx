@@ -198,7 +198,7 @@ export default function Home() {
                <a href="#features" className="text-sm text-white/60 hover:text-white transition-colors">Features</a>
                <a href="#about" className="text-sm text-white/60 hover:text-white transition-colors">About</a>
                <a href="#docs" className="text-sm text-white/60 hover:text-white transition-colors">Docs</a>
-               <button onClick={() => navigate(createPageUrl('KCbridge'))} className="text-sm text-white/60 hover:text-white transition-colors">Categories</button>
+               <button onClick={() => navigate(createPageUrl('KCbridge'))} className="text-sm text-white/60 hover:text-white transition-colors">KCbridge</button>
              </motion.div>
 
             {/* Cart, Settings, and Connect Wallet Buttons */}
@@ -266,7 +266,7 @@ export default function Home() {
               <div className="flex items-center gap-2 md:gap-6 text-xs md:text-sm text-white/50">
                  <a href="#products" className="hover:text-white transition-colors">Products</a>
                  <a href="#deals" className="hover:text-white transition-colors">Deals</a>
-                 <button onClick={() => navigate(createPageUrl('KCbridge'))} className="hover:text-white transition-colors">Categories</button>
+                 <button onClick={() => navigate(createPageUrl('KCbridge'))} className="hover:text-white transition-colors">KCbridge</button>
                </div>
               <div className="flex items-center gap-2">
                 <Button
