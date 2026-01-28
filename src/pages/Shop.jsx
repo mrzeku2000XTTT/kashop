@@ -7,32 +7,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { jwtDecode } from 'jwt-decode';
 
 export default function ShopPage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '' });
   const [selectedStore, setSelectedStore] = useState(null);
+  const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
       try {
-        const isAuthenticated = await base44.auth.isAuthenticated();
-        if (!isAuthenticated) {
-          navigate('/');
-          return;
-        }
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-        setUserEmail(currentUser.email);
+        const decoded = jwtDecode(token);
+        setUserEmail(decoded.email);
       } catch (error) {
-        console.error('Auth error:', error);
+        console.error('Token decode error:', error);
+        navigate('/');
       }
-    };
-    checkAuth();
+    } else {
+      navigate('/');
+    }
+    setLoading(false);
   }, [navigate]);
 
   const { data: stores = [] } = useQuery({
@@ -70,6 +69,10 @@ export default function ShopPage() {
       ownerEmail: userEmail,
     });
   };
+
+  if (loading) {
+    return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">Loading...</div>;
+  }
 
   if (selectedStore) {
     return (
