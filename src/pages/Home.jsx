@@ -259,9 +259,14 @@ export default function Home() {
                 </Button>
                 <Button
                   onClick={() => setShowKaspacom(true)}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white font-medium px-6 py-2 rounded-full text-sm"
+                  className="bg-white/5 hover:bg-white/10 border border-[#49EACB]/30 text-white rounded-full w-10 h-10 p-0 flex items-center justify-center"
+                  title="Kaspacom"
                 >
-                  Kaspacom
+                  <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697a20c3d4a49d80e84fbf09/c07a8382d_image.png"
+                    alt="Kaspacom"
+                    className="w-5 h-5 object-contain"
+                  />
                 </Button>
               </div>
             </div>
