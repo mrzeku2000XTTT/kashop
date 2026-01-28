@@ -157,10 +157,11 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="flex items-center gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#49EACB] to-[#49EACB]/60 flex items-center justify-center">
-                <span className="text-black font-bold text-lg">K</span>
-              </div>
-              <span className="text-xl font-semibold tracking-tight">KaShop</span>
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697a20c3d4a49d80e84fbf09/0927799b1_image.png"
+                alt="KaShop"
+                className="h-12 w-12 object-contain"
+              />
             </motion.div>
 
             {/* Navigation Links */}
@@ -335,9 +336,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#49EACB] to-[#49EACB]/60 flex items-center justify-center">
-                <span className="text-black font-bold text-sm">K</span>
-              </div>
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697a20c3d4a49d80e84fbf09/0927799b1_image.png"
+                alt="KaShop"
+                className="h-10 w-10 object-contain"
+              />
               <span className="text-sm text-white/40">© 2025 KaShop. All rights reserved.</span>
             </div>
             <div className="flex items-center gap-6">
