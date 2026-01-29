@@ -17,7 +17,7 @@ export default function Layout({ children }) {
       {/* KasperoPay widget container - MUST be in root layout */}
       <div 
         id="kaspero-pay-button"
-        data-merchant="kpm_hocgtdnj"
+        data-merchant="kpm_si9bfaqp"
         style={{ display: 'none' }}
       />
       
