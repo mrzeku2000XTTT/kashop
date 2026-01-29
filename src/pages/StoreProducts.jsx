@@ -116,11 +116,9 @@ export default function StoreProducts() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       <header className="border-b border-white/5">
-        {store.coverImage && (
-          <div className="relative w-full h-64 overflow-hidden bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center">
-            <img src={store.coverImage} alt={store.name} className="max-w-full max-h-full object-contain" />
-          </div>
-        )}
+        <div className="relative w-full h-48 bg-gradient-to-br from-[#49EACB]/20 via-purple-500/10 to-blue-500/10">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+        </div>
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center gap-4">
             <Button
