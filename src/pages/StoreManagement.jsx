@@ -89,11 +89,9 @@ export default function StoreManagement() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-white">
         <header className="border-b border-white/5">
-          {selectedStore.coverImage && (
-            <div className="relative w-full h-48 overflow-hidden bg-white/5">
-              <img src={selectedStore.coverImage} alt={selectedStore.name} className="w-full h-full object-cover" />
-            </div>
-          )}
+          <div className="relative w-full h-48 bg-gradient-to-br from-[#49EACB]/20 via-purple-500/10 to-blue-500/10">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+          </div>
           <div className="max-w-7xl mx-auto px-6 py-6">
             <div className="flex items-center gap-4">
               <Button
@@ -106,7 +104,7 @@ export default function StoreManagement() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold">{selectedStore.name}</h1>
-                <p className="text-white/60 text-sm mt-1">{selectedStore.description}</p>
+                <p className="text-white/60 text-sm mt-1">{selectedStore.description || 'Manage and organize your products'}</p>
               </div>
             </div>
           </div>
