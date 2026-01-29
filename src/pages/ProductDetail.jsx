@@ -31,6 +31,15 @@ export default function ProductDetail() {
         console.error('Failed to decode token:', error);
       }
     }
+
+    // Load KasperoPay widget script if not already loaded
+    if (!document.getElementById('kaspero-pay-script')) {
+      const script = document.createElement('script');
+      script.id = 'kaspero-pay-script';
+      script.src = 'https://kaspa-store.com/pay/widget.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
   }, []);
 
   const { data: product, isLoading } = useQuery({
@@ -62,25 +71,28 @@ export default function ProductDetail() {
     setIsProcessing(true);
 
     try {
-      const totalAmount = (product.price * quantity).toFixed(8);
+      const totalAmount = (product.price * quantity).toFixed(2);
 
-      if (window.KasperoPay) {
-        window.KasperoPay.createPayment({
-          to: product.walletAddress,
+      if (window.KasperoPay && window.KasperoPay.pay) {
+        window.KasperoPay.pay({
           amount: totalAmount,
-          note: `Purchase: ${product.name} (x${quantity})`,
-          onSuccess: function(txHash) {
-            alert(`Payment successful! Transaction: ${txHash}`);
-            navigate('/');
-          },
-          onCancel: function() {
-            setIsProcessing(false);
-          },
-          onError: function(error) {
-            alert('Payment failed: ' + error);
-            setIsProcessing(false);
-          }
+          item: `${product.name} (x${quantity})`,
+          to: product.walletAddress,
+          style: 'dark'
         });
+
+        // Listen for payment completion
+        if (!window.KasperoPay._paymentListenerSet) {
+          window.KasperoPay.onPayment(function(result) {
+            if (result.success) {
+              alert(`Payment successful! Transaction ID: ${result.txid}`);
+              navigate('/');
+            } else {
+              setIsProcessing(false);
+            }
+          });
+          window.KasperoPay._paymentListenerSet = true;
+        }
       } else {
         alert('KasperoPay not loaded. Please refresh the page.');
         setIsProcessing(false);
@@ -103,6 +115,13 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Hidden KasperoPay widget container - required for initialization */}
+      <div 
+        id="kaspero-pay-button"
+        data-merchant="kpm_vx7c48go"
+        style={{ display: 'none' }}
+      />
+      
       <header className="border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <Button
