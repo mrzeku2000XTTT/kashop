@@ -18,18 +18,21 @@ export default function ProductForm({ onSubmit, onCancel, isLoading, initialData
 
   const handleImageUpload = async (e) => {
     const files = e.target.files;
-    if (files) {
+    if (files && files.length > 0) {
       setUploading(true);
       try {
-        for (let file of Array.from(files)) {
-          const response = await base44.integrations.Core.UploadFile({ file });
-          setFormData(prev => ({
-            ...prev,
-            images: [...(prev.images || []), response.file_url]
-          }));
-        }
+        const uploadPromises = Array.from(files).map(file => 
+          base44.integrations.Core.UploadFile({ file })
+        );
+        const responses = await Promise.all(uploadPromises);
+        const newImageUrls = responses.map(r => r.file_url);
+        setFormData(prev => ({
+          ...prev,
+          images: [...(prev.images || []), ...newImageUrls]
+        }));
       } catch (error) {
         console.error('Upload error:', error);
+        alert('Failed to upload images. Please try again.');
       } finally {
         setUploading(false);
       }
