@@ -64,7 +64,16 @@ export default function ProductDetail() {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert('Address copied to clipboard!');
+    
+    // Show small toast notification
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-6 right-6 bg-[#49EACB] text-black px-4 py-2 rounded-lg text-sm font-medium shadow-lg z-[9999] animate-in fade-in slide-in-from-top-2';
+    toast.textContent = 'Address copied!';
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.remove();
+    }, 2000);
   };
 
   const handleStartVerification = async () => {
