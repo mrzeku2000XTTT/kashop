@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, Copy, Check, Loader2 } from 'lucide-react';
+import { ArrowLeft, Package, ShoppingCart, Wallet } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createPageUrl } from '../utils';
@@ -13,27 +13,26 @@ export default function ProductDetail() {
   const [productId, setProductId] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showPayment, setShowPayment] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [checkingPayment, setCheckingPayment] = useState(false);
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [userWalletAddress, setUserWalletAddress] = useState(null);
+  const [buyerWalletAddress, setBuyerWalletAddress] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     setProductId(id);
 
-    // Get user's wallet address from token
+    // Get buyer's wallet address from token
     const token = localStorage.getItem('auth_token');
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setUserWalletAddress(decoded.address);
+        setBuyerWalletAddress(decoded.address || decoded.email);
       } catch (error) {
         console.error('Failed to decode token:', error);
       }
     }
+
+
   }, []);
 
   const { data: product, isLoading } = useQuery({
@@ -45,7 +44,7 @@ export default function ProductDetail() {
     enabled: !!productId,
   });
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!product.walletAddress) {
       alert('Seller wallet address not configured');
       return;
@@ -56,39 +55,43 @@ export default function ProductDetail() {
       return;
     }
 
-    setShowPayment(true);
-  };
+    setIsProcessing(true);
 
-  const copyAddress = () => {
-    navigator.clipboard.writeText(product.walletAddress);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    try {
+      const totalAmount = parseFloat((product.price * quantity).toFixed(2));
 
-  const checkPayment = async () => {
-    const totalAmount = parseFloat((product.price * quantity).toFixed(8));
-    setCheckingPayment(true);
-
-    const pollTransaction = async () => {
-      try {
-        const response = await base44.functions.invoke('checkKaspaPayment', {
-          address: product.walletAddress,
-          amount: totalAmount
-        });
-
-        if (response.data?.success) {
-          setPaymentConfirmed(true);
-          setCheckingPayment(false);
-        } else {
-          setTimeout(pollTransaction, 3000); // Poll every 3 seconds
-        }
-      } catch (error) {
-        console.error('Payment check error:', error);
-        setTimeout(pollTransaction, 3000); // Continue polling on error
+      // Check if KasperoPay is loaded
+      if (!window.KasperoPay || !window.KasperoPay.pay) {
+        alert('Payment system not loaded. Please refresh the page.');
+        setIsProcessing(false);
+        return;
       }
-    };
 
-    pollTransaction();
+      // Trigger payment
+      window.KasperoPay.pay({
+        amount: totalAmount,
+        item: `${product.name} (x${quantity})`,
+        style: 'dark'
+      });
+
+      // Listen for payment completion (set once)
+      if (!window._kaspaPaymentListenerSet) {
+        window.KasperoPay.onPayment(function(result) {
+          if (result.success) {
+            alert(`Payment successful! Transaction ID: ${result.txid}`);
+            setIsProcessing(false);
+            navigate('/');
+          } else {
+            setIsProcessing(false);
+          }
+        });
+        window._kaspaPaymentListenerSet = true;
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Error processing payment: ' + error.message);
+      setIsProcessing(false);
+    }
   };
 
   if (isLoading || !product) {
@@ -195,94 +198,29 @@ export default function ProductDetail() {
                   <span className="text-2xl font-bold text-[#49EACB]">{totalPrice} KAS</span>
                 </div>
 
-                {!showPayment ? (
-                  <Button
-                    onClick={handleCheckout}
-                    disabled={!product.stock || quantity > product.stock}
-                    className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-6 text-lg"
-                  >
-                    Proceed to Payment
-                  </Button>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                      <p className="text-white/60 text-sm mb-2">Send exactly this amount:</p>
-                      <p className="text-2xl font-bold text-[#49EACB] mb-4">{totalPrice} KAS</p>
-                      
-                      <p className="text-white/60 text-sm mb-2">To seller's address:</p>
-                      <div className="flex items-center gap-2 bg-black/30 rounded-lg p-3">
-                        <code className="text-xs text-white/80 break-all flex-1 font-mono">
-                          {product.walletAddress}
-                        </code>
-                        <Button
-                          onClick={copyAddress}
-                          size="icon"
-                          variant="ghost"
-                          className="flex-shrink-0 text-white/60 hover:text-white"
-                        >
-                          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        </Button>
-                      </div>
-                    </div>
-
-                    {paymentConfirmed ? (
-                      <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-6 space-y-3">
-                        <div className="text-center">
-                          <Check className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                          <p className="text-green-500 font-bold text-lg">Payment Confirmed!</p>
-                        </div>
-                        <div className="bg-white/5 rounded-lg p-3 space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-white/60">Amount:</span>
-                            <span className="text-white font-semibold">{totalPrice} KAS</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-white/60">Seller:</span>
-                            <code className="text-white/80 text-xs">{product.walletAddress.slice(0, 12)}...{product.walletAddress.slice(-8)}</code>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-white/60">Status:</span>
-                            <span className="text-green-500">Verified ✓</span>
-                          </div>
-                        </div>
-                        <Button
-                          onClick={() => navigate('/')}
-                          className="w-full bg-green-500 hover:bg-green-600 text-black font-semibold"
-                        >
-                          Back to Home
-                        </Button>
-                      </div>
-                    ) : checkingPayment ? (
-                      <div className="text-center py-6">
-                        <div className="w-16 h-16 border-4 border-[#49EACB]/30 border-t-[#49EACB] rounded-full animate-spin mx-auto mb-4" />
-                        <p className="text-[#49EACB] font-semibold mb-2">Waiting for Payment...</p>
-                        <p className="text-white/60 text-sm">Monitoring blockchain for {totalPrice} KAS</p>
-                      </div>
-                    ) : (
-                      <Button
-                        onClick={checkPayment}
-                        className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-4"
-                      >
-                        I Have Sent Payment
-                      </Button>
-                    )}
-
-                    <Button
-                      onClick={() => setShowPayment(false)}
-                      variant="ghost"
-                      className="w-full text-white/60 hover:text-white"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                )}
+                <Button
+                  onClick={handleCheckout}
+                  disabled={isProcessing || !product.stock || quantity > product.stock}
+                  className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-6 text-lg"
+                >
+                  {isProcessing ? (
+                    'Processing...'
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      Buy Now
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-              <p className="text-white/60 text-sm mb-2">Seller's Kaspa Address</p>
-              <p className="text-white/80 text-xs font-mono break-all">{product.walletAddress}</p>
-            </div>
+            {product.walletAddress && (
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <p className="text-white/60 text-sm mb-2">Payment goes to seller</p>
+                <p className="text-white/40 text-xs font-mono break-all">{product.walletAddress}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

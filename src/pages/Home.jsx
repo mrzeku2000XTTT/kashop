@@ -19,99 +19,148 @@ export default function Home() {
   const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
-    // Handle Keystone OAuth callback
-    const params = new URLSearchParams(window.location.search);
-    const keystoneConnected = params.get('keystone_connected');
-    const token = params.get('token');
+    // Load KasperoPay widget script
+    const script = document.createElement('script');
+    script.src = 'https://kaspa-store.com/pay/widget.js';
+    script.async = true;
+    
+    script.onload = () => {
+      console.log('KasperoPay widget loaded successfully');
+      
+      // Handle Keystone OAuth callback
+      const params = new URLSearchParams(window.location.search);
+      const keystoneConnected = params.get('keystone_connected');
+      const token = params.get('token');
 
-    if (keystoneConnected === 'true' && token) {
-      console.log('Keystone OAuth callback detected');
-      
-      // Store token
-      localStorage.setItem('auth_token', token);
-      
-      // Decode token to get user data
-      try {
-        const decoded = jwtDecode(token);
-        console.log('Decoded token:', decoded);
+      if (keystoneConnected === 'true' && token) {
+        console.log('Keystone OAuth callback detected');
         
-        // Keystone user has email and address
-        if (decoded.email) {
-          setWalletAddress(decoded.address || decoded.email);
-          setUserEmail(decoded.email);
-        }
-      } catch (error) {
-        console.error('Failed to decode token:', error);
-      }
-      
-      setIsConnecting(false);
-      
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname);
-    } else {
-      // Check if already connected (returning user)
-      const storedToken = localStorage.getItem('auth_token');
-      if (storedToken) {
+        // Store token
+        localStorage.setItem('auth_token', token);
+        
+        // Decode token to get user data
         try {
-          const decoded = jwtDecode(storedToken);
+          const decoded = jwtDecode(token);
+          console.log('Decoded token:', decoded);
+          
+          // Keystone user has email and address
           if (decoded.email) {
             setWalletAddress(decoded.address || decoded.email);
             setUserEmail(decoded.email);
           }
         } catch (error) {
-          console.error('Failed to decode stored token:', error);
-          localStorage.removeItem('auth_token');
+          console.error('Failed to decode token:', error);
+        }
+        
+        setIsConnecting(false);
+        
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname);
+      } else {
+        // Check if already connected (returning user)
+        const storedToken = localStorage.getItem('auth_token');
+        if (storedToken) {
+          try {
+            const decoded = jwtDecode(storedToken);
+            if (decoded.email) {
+              setWalletAddress(decoded.address || decoded.email);
+              setUserEmail(decoded.email);
+            }
+          } catch (error) {
+            console.error('Failed to decode stored token:', error);
+            localStorage.removeItem('auth_token');
+          }
+        } else if (window.KasperoPay && window.KasperoPay.isConnected && window.KasperoPay.isConnected()) {
+          const user = window.KasperoPay.getUser();
+          if (user && user.address) {
+            setWalletAddress(user.address);
+          }
         }
       }
-    }
+    };
+    
+    script.onerror = () => {
+      console.error('Failed to load KasperoPay widget');
+      setIsConnecting(false);
+    };
+    
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
   }, []);
 
   const connectWallet = () => {
     setIsConnecting(true);
 
-    // Get current URL for OAuth callback
-    const redirectUrl = window.location.origin + window.location.pathname;
-    
-    // Open Kaspero auth in new window
-    const authUrl = `https://kaspa-store.com/keystone-auth?redirect_uri=${encodeURIComponent(redirectUrl)}`;
-    
-    const width = 500;
-    const height = 700;
-    const left = window.screen.width / 2 - width / 2;
-    const top = window.screen.height / 2 - height / 2;
-    
-    const authWindow = window.open(
-      authUrl,
-      'Kaspero Auth',
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
-
-    // Reset connecting state after a short delay if window was blocked
-    if (!authWindow) {
+    // Check if KasperoPay is loaded
+    if (!window.KasperoPay) {
+      console.error('KasperoPay not loaded yet. Please refresh the page.');
       setIsConnecting(false);
-      alert('Please allow popups to connect your wallet');
-    } else {
-      // Monitor if user closes the auth window
-      const checkClosed = setInterval(() => {
-        if (authWindow.closed) {
-          clearInterval(checkClosed);
+      return;
+    }
+
+    try {
+      window.KasperoPay.connect({
+        onConnect: function(user) {
+          console.log('✅ Wallet connected!', user);
+          if (user && user.address) {
+            setWalletAddress(user.address);
+            setUserEmail(user.address);
+
+            // Persist connection state
+            if (user.token) {
+              localStorage.setItem('auth_token', user.token);
+            } else if (user.address) {
+              // Create a basic token if not provided
+              const basicToken = btoa(JSON.stringify({ address: user.address, email: user.address, timestamp: Date.now() }));
+              localStorage.setItem('auth_token', basicToken);
+            }
+          }
+          setIsConnecting(false);
+        },
+        onCancel: function() {
+          console.log('❌ Connection cancelled');
           setIsConnecting(false);
         }
-      }, 500);
+      });
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+      setIsConnecting(false);
     }
   };
 
   const disconnectWallet = () => {
-    // Clear ALL localStorage items related to wallet/auth
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('token');
-    localStorage.removeItem('kp_token');
-    localStorage.removeItem('kp_wallet');
-    localStorage.removeItem('walletType');
-    localStorage.removeItem('user');
-    
-    setWalletAddress(null);
-    setUserEmail(null);
+    try {
+      if (window.KasperoPay && window.KasperoPay.disconnect) {
+        window.KasperoPay.disconnect();
+      }
+      // Clear ALL localStorage items related to wallet/auth
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('kp_token');
+      localStorage.removeItem('kp_wallet');
+      localStorage.removeItem('walletType');
+      localStorage.removeItem('user');
+      
+      setWalletAddress(null);
+      setUserEmail(null);
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      // Still clear storage even if disconnect fails
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('kp_token');
+      localStorage.removeItem('kp_wallet');
+      localStorage.removeItem('walletType');
+      localStorage.removeItem('user');
+      
+      setWalletAddress(null);
+      setUserEmail(null);
+    }
   };
 
   const truncateAddress = (address) => {
