@@ -264,7 +264,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6 py-2">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 md:gap-6 text-xs md:text-sm text-white/50">
-                 <a href="#products" className="hover:text-white transition-colors">Products</a>
+                 <button onClick={() => navigate(createPageUrl('Products'))} className="hover:text-white transition-colors">Products</button>
                  <a href="#deals" className="hover:text-white transition-colors">Deals</a>
                  <button onClick={() => navigate(createPageUrl('KCbridge'))} className="hover:text-white transition-colors">KCbridge</button>
                </div>
