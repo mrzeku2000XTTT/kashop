@@ -142,7 +142,7 @@ export default function Features() {
                 
                 {/* Content */}
                 <div className="relative">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
+                  <div className="w-14 h-14 rounded-2xl bg-black border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
                     <feature.icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold mb-3 text-white">{feature.title}</h3>
