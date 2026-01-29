@@ -202,9 +202,8 @@ export default function Home() {
                className="hidden md:flex items-center gap-8"
              >
                <button onClick={() => navigate(createPageUrl('Features'))} className="text-sm text-white/60 hover:text-white transition-colors">Features</button>
-               <button onClick={() => navigate(createPageUrl('About'))} className="text-sm text-white/60 hover:text-white transition-colors">About</button>
-               <button onClick={() => navigate(createPageUrl('Docs'))} className="text-sm text-white/60 hover:text-white transition-colors">Docs</button>
-               <button onClick={() => navigate(createPageUrl('KCbridge'))} className="text-sm text-white/60 hover:text-white transition-colors">KCbridge</button>
+                <button onClick={() => navigate(createPageUrl('About'))} className="text-sm text-white/60 hover:text-white transition-colors">About</button>
+                <button onClick={() => navigate(createPageUrl('Docs'))} className="text-sm text-white/60 hover:text-white transition-colors">Docs</button>
              </motion.div>
 
             {/* Cart, Settings, and Connect Wallet Buttons */}
