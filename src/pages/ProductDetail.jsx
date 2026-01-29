@@ -336,9 +336,17 @@ export default function ProductDetail() {
                   Send <strong>{totalPrice} KAS</strong> to the address below
                 </p>
                 <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-6">
-                  <p className="text-white text-xs font-mono break-all">
-                    {product.walletAddress}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <p className="text-white text-xs font-mono break-all flex-1">
+                      {product.walletAddress}
+                    </p>
+                    <button
+                      onClick={() => copyToClipboard(product.walletAddress)}
+                      className="flex-shrink-0 text-[#49EACB] hover:text-[#49EACB]/80 transition"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
                 
                 <Button
