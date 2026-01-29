@@ -82,6 +82,11 @@ export default function StoreManagement() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-white">
         <header className="border-b border-white/5">
+          {selectedStore.coverImage && (
+            <div className="relative w-full h-48 overflow-hidden bg-white/5">
+              <img src={selectedStore.coverImage} alt={selectedStore.name} className="w-full h-full object-cover" />
+            </div>
+          )}
           <div className="max-w-7xl mx-auto px-6 py-6">
             <div className="flex items-center gap-4">
               <Button
