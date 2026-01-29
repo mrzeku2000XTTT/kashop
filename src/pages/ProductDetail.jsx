@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, ShoppingCart, Wallet } from 'lucide-react';
+import { ArrowLeft, Package, ShoppingCart, Copy, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { createPageUrl } from '../utils';
 import { jwtDecode } from 'jwt-decode';
 
@@ -14,7 +15,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [buyerWalletAddress, setBuyerWalletAddress] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -44,7 +45,7 @@ export default function ProductDetail() {
     enabled: !!productId,
   });
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!product.walletAddress) {
       alert('Seller wallet address not configured');
       return;
@@ -55,43 +56,12 @@ export default function ProductDetail() {
       return;
     }
 
-    setIsProcessing(true);
+    setShowPaymentModal(true);
+  };
 
-    try {
-      const totalAmount = parseFloat((product.price * quantity).toFixed(2));
-
-      // Check if KasperoPay is loaded
-      if (!window.KasperoPay || !window.KasperoPay.pay) {
-        alert('Payment system not loaded. Please refresh the page.');
-        setIsProcessing(false);
-        return;
-      }
-
-      // Trigger payment
-      window.KasperoPay.pay({
-        amount: totalAmount,
-        item: `${product.name} (x${quantity})`,
-        style: 'dark'
-      });
-
-      // Listen for payment completion (set once)
-      if (!window._kaspaPaymentListenerSet) {
-        window.KasperoPay.onPayment(function(result) {
-          if (result.success) {
-            alert(`Payment successful! Transaction ID: ${result.txid}`);
-            setIsProcessing(false);
-            navigate('/');
-          } else {
-            setIsProcessing(false);
-          }
-        });
-        window._kaspaPaymentListenerSet = true;
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      alert('Error processing payment: ' + error.message);
-      setIsProcessing(false);
-    }
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    alert('Address copied to clipboard!');
   };
 
   if (isLoading || !product) {
@@ -200,17 +170,11 @@ export default function ProductDetail() {
 
                 <Button
                   onClick={handleCheckout}
-                  disabled={isProcessing || !product.stock || quantity > product.stock}
+                  disabled={!product.stock || quantity > product.stock}
                   className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-6 text-lg"
                 >
-                  {isProcessing ? (
-                    'Processing...'
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-5 h-5 mr-2" />
-                      Buy Now
-                    </>
-                  )}
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Buy Now
                 </Button>
               </div>
             </div>
@@ -224,6 +188,60 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="bg-[#1a1a1a] border-white/10 text-white max-w-md">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Complete Payment</h2>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="text-white/60 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
+              <div>
+                <p className="text-white/60 text-sm mb-2">Product</p>
+                <p className="text-white font-semibold">{product.name} (x{quantity})</p>
+              </div>
+
+              <div className="pt-4 border-t border-white/10">
+                <p className="text-white/60 text-sm mb-2">Amount to Pay</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-[#49EACB]">{totalPrice}</span>
+                  <span className="text-xl text-white/60">KAS</span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/10">
+                <p className="text-white/60 text-sm mb-3">Send payment to seller's address:</p>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                  <p className="text-white font-mono text-sm break-all mb-3">
+                    {product.walletAddress}
+                  </p>
+                  <Button
+                    onClick={() => copyToClipboard(product.walletAddress)}
+                    className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Address
+                  </Button>
+                </div>
+              </div>
+
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+                <p className="text-yellow-500 text-sm">
+                  ⚠️ Please send exactly <strong>{totalPrice} KAS</strong> to the address above. After payment, contact the seller to confirm your order.
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
