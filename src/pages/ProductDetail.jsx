@@ -52,12 +52,6 @@ export default function ProductDetail() {
   });
 
   const handleCheckout = async () => {
-    if (!buyerWalletAddress) {
-      alert('Please connect your wallet first');
-      navigate('/');
-      return;
-    }
-
     if (!product.walletAddress) {
       alert('Seller wallet address not configured');
       return;
@@ -71,33 +65,39 @@ export default function ProductDetail() {
     setIsProcessing(true);
 
     try {
-      const totalAmount = (product.price * quantity).toFixed(2);
+      const totalAmount = parseFloat((product.price * quantity).toFixed(2));
 
-      if (window.KasperoPay && window.KasperoPay.pay) {
-        window.KasperoPay.pay({
-          amount: totalAmount,
-          item: `${product.name} (x${quantity})`,
-          to: product.walletAddress,
-          style: 'dark'
-        });
-
-        // Listen for payment completion
-        if (!window.KasperoPay._paymentListenerSet) {
-          window.KasperoPay.onPayment(function(result) {
-            if (result.success) {
-              alert(`Payment successful! Transaction ID: ${result.txid}`);
-              navigate('/');
-            } else {
-              setIsProcessing(false);
-            }
-          });
-          window.KasperoPay._paymentListenerSet = true;
-        }
-      } else {
-        alert('KasperoPay not loaded. Please refresh the page.');
+      // Check if KasperoPay is loaded
+      if (!window.KasperoPay || !window.KasperoPay.pay) {
+        alert('Payment system not loaded. Please refresh the page.');
         setIsProcessing(false);
+        return;
+      }
+
+      // Trigger payment
+      window.KasperoPay.pay({
+        amount: totalAmount,
+        item: `${product.name} (x${quantity})`,
+        to: product.walletAddress,
+        style: 'dark',
+        wallets: 'kasware,kastle,keystone,mobile,kasanova,qrcode'
+      });
+
+      // Listen for payment completion (set once)
+      if (!window._kaspaPaymentListenerSet) {
+        window.KasperoPay.onPayment(function(result) {
+          if (result.success) {
+            alert(`Payment successful! Transaction ID: ${result.txid}`);
+            setIsProcessing(false);
+            navigate('/');
+          } else {
+            setIsProcessing(false);
+          }
+        });
+        window._kaspaPaymentListenerSet = true;
       }
     } catch (error) {
+      console.error('Payment error:', error);
       alert('Error processing payment: ' + error.message);
       setIsProcessing(false);
     }
@@ -214,30 +214,20 @@ export default function ProductDetail() {
                   <span className="text-2xl font-bold text-[#49EACB]">{totalPrice} KAS</span>
                 </div>
 
-                {buyerWalletAddress ? (
-                  <Button
-                    onClick={handleCheckout}
-                    disabled={isProcessing || !product.stock || quantity > product.stock}
-                    className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-6 text-lg"
-                  >
-                    {isProcessing ? (
-                      'Processing...'
-                    ) : (
-                      <>
-                        <ShoppingCart className="w-5 h-5 mr-2" />
-                        Buy Now
-                      </>
-                    )}
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => navigate('/')}
-                    className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-6 text-lg"
-                  >
-                    <Wallet className="w-5 h-5 mr-2" />
-                    Connect Wallet to Buy
-                  </Button>
-                )}
+                <Button
+                  onClick={handleCheckout}
+                  disabled={isProcessing || !product.stock || quantity > product.stock}
+                  className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-6 text-lg"
+                >
+                  {isProcessing ? (
+                    'Processing...'
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      Buy Now
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 

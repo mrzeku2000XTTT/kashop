@@ -50,24 +50,24 @@
 import AddProduct from './pages/AddProduct';
 import Home from './pages/Home';
 import KCbridge from './pages/KCbridge';
+import ProductDetail from './pages/ProductDetail';
+import Products from './pages/Products';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import StoreManagement from './pages/StoreManagement';
 import StoreProducts from './pages/StoreProducts';
-import Products from './pages/Products';
-import ProductDetail from './pages/ProductDetail';
 
 
 export const PAGES = {
     "AddProduct": AddProduct,
     "Home": Home,
     "KCbridge": KCbridge,
+    "ProductDetail": ProductDetail,
+    "Products": Products,
     "Settings": Settings,
     "Shop": Shop,
     "StoreManagement": StoreManagement,
     "StoreProducts": StoreProducts,
-    "Products": Products,
-    "ProductDetail": ProductDetail,
 }
 
 export const pagesConfig = {
