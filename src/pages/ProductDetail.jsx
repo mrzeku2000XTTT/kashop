@@ -269,8 +269,9 @@ export default function ProductDetail() {
 
       {/* Payment Modal */}
       <Dialog open={showPaymentModal} onOpenChange={(open) => {
-        if (!isVerifying) {
-          setShowPaymentModal(open);
+        setShowPaymentModal(open);
+        if (!open) {
+          setIsVerifying(false);
         }
       }}>
         <DialogContent className="bg-[#1a1a1a] border-white/10 text-white max-w-md">
