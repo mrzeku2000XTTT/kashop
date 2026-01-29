@@ -128,7 +128,7 @@ export default function StoreManagement() {
                 {products.map(product => (
                   <div
                     key={product.id}
-                    onClick={() => navigate(createPageUrl('StoreProducts') + `?storeId=${selectedStore.id}`)}
+                    onClick={() => navigate(createPageUrl('ProductDetail') + `?id=${product.id}`)}
                     className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-[#49EACB]/30 transition cursor-pointer group"
                   >
                     {product.images && product.images.length > 0 ? (

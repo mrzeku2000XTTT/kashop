@@ -57,6 +57,23 @@ export default function AddProduct() {
   });
 
   const handleSaveProduct = (formData) => {
+    const token = localStorage.getItem('auth_token');
+    let walletAddress = null;
+    
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        walletAddress = decoded.address || decoded.email;
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+      }
+    }
+
+    if (!walletAddress) {
+      alert('Please connect your wallet first to create products');
+      return;
+    }
+
     createMutation.mutate({
       name: formData.name,
       description: formData.description,
@@ -66,6 +83,7 @@ export default function AddProduct() {
       images: formData.images,
       ownerEmail: userEmail,
       storeId,
+      walletAddress: walletAddress,
     });
   };
 
