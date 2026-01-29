@@ -215,6 +215,7 @@ export default function Home() {
               className="flex items-center gap-3"
             >
               <Button
+                onClick={() => navigate(createPageUrl('Orders'))}
                 variant="ghost"
                 className="text-white/70 hover:text-white hover:bg-white/5 rounded-full w-10 h-10 p-0"
               >
