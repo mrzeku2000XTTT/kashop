@@ -18,6 +18,7 @@ export default function ProductDetail() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationStartTime, setVerificationStartTime] = useState(null);
+  const [showKaspacom, setShowKaspacom] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -298,16 +299,54 @@ export default function ProductDetail() {
                 <p className="text-white/60 text-sm mb-4">
                   Send <strong>{totalPrice} KAS</strong> to the address below
                 </p>
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-4">
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-6">
                   <p className="text-white text-xs font-mono break-all">
                     {product.walletAddress}
                   </p>
                 </div>
+                
+                <Button
+                  onClick={() => setShowKaspacom(true)}
+                  className="w-full bg-white/10 hover:bg-white/20 border border-[#49EACB]/30 text-white mb-4"
+                >
+                  <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697a20c3d4a49d80e84fbf09/c07a8382d_image.png"
+                    alt="Kaspacom"
+                    className="w-5 h-5 mr-2"
+                  />
+                  Pay with Kaspacom Wallet
+                </Button>
+
                 <p className="text-white/40 text-xs">
                   Checking blockchain every 3 seconds...
                 </p>
               </div>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Kaspacom Wallet Modal */}
+      <Dialog open={showKaspacom} onOpenChange={setShowKaspacom}>
+        <DialogContent className="w-screen h-screen max-w-full md:max-w-[95vw] md:w-[95vw] md:h-[95vh] p-0 bg-[#0a0a0a] border-white/10 flex flex-col md:rounded-lg overflow-hidden">
+          <div className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-white/10 flex-shrink-0 flex items-center gap-3">
+            <button
+              onClick={() => setShowKaspacom(false)}
+              className="text-white/70 hover:text-white hover:bg-white/5 rounded-full p-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h2 className="text-white text-lg md:text-xl font-semibold">Kaspacom Wallet</h2>
+            <span className="text-white/50 text-xs md:text-sm ml-auto">Send payment from wallet</span>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <iframe
+              src="https://wallet.kaspa.com/onboarding"
+              className="w-full h-full border-0"
+              title="Kaspacom Wallet"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation allow-top-navigation-by-user-activation"
+              allow="clipboard-read; clipboard-write"
+            />
           </div>
         </DialogContent>
       </Dialog>
