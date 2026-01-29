@@ -21,19 +21,6 @@ export default function ProductDetail() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     setProductId(id);
-
-    // Get buyer's wallet address from token
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setBuyerWalletAddress(decoded.address || decoded.email);
-      } catch (error) {
-        console.error('Failed to decode token:', error);
-      }
-    }
-
-
   }, []);
 
   const { data: product, isLoading } = useQuery({
