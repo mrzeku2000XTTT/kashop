@@ -82,9 +82,32 @@ export default function ProductDetail() {
 
         if (response.data?.verified) {
           setIsVerifying(false);
-          alert(`✅ Payment verified! Transaction ID: ${response.data.txid}`);
           setShowPaymentModal(false);
-          navigate('/');
+          
+          // Update product stock
+          const newStock = (product.stock || 0) - quantity;
+          await base44.entities.Product.update(product.id, { stock: newStock });
+          
+          // Show subtle notification
+          const notif = document.createElement('div');
+          notif.className = 'fixed bottom-6 right-6 bg-black/90 border border-[#49EACB]/30 rounded-lg p-4 shadow-2xl z-[9999] max-w-sm';
+          notif.innerHTML = `
+            <p class="text-[#49EACB] text-sm font-semibold mb-2">✅ Payment Verified!</p>
+            <a href="https://explorer.kaspa.org/txs/${response.data.txid}" target="_blank" 
+               class="text-white/60 text-xs hover:text-[#49EACB] underline break-all">
+              ${response.data.txid}
+            </a>
+          `;
+          document.body.appendChild(notif);
+          
+          setTimeout(() => {
+            notif.remove();
+            if (newStock <= 0) {
+              navigate('/');
+            } else {
+              window.location.reload();
+            }
+          }, 5000);
         } else {
           setTimeout(checkTransaction, 3000); // Poll every 3 seconds
         }
