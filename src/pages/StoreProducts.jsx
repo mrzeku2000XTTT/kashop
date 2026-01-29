@@ -143,10 +143,7 @@ export default function StoreProducts() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xl font-semibold">Products ({products.length})</h2>
           <Button
-            onClick={() => {
-              setEditingProduct(null);
-              setShowForm(!showForm);
-            }}
+            onClick={() => navigate(createPageUrl('AddProduct') + `?storeId=${storeId}`)}
             className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -187,11 +184,11 @@ export default function StoreProducts() {
           ))}
         </div>
 
-        {products.length === 0 && !showForm && (
+        {products.length === 0 && (
           <div className="text-center py-12">
             <p className="text-white/40 mb-4">No products yet. Create your first product to start your store.</p>
             <Button
-              onClick={() => setShowForm(true)}
+              onClick={() => navigate(createPageUrl('AddProduct') + `?storeId=${storeId}`)}
               className="bg-[#49EACB] hover:bg-[#49EACB]/90 text-black"
             >
               <Plus className="w-4 h-4 mr-2" />
