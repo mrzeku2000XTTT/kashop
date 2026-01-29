@@ -88,6 +88,19 @@ export default function ProductDetail() {
           const newStock = (product.stock || 0) - quantity;
           await base44.entities.Product.update(product.id, { stock: newStock });
           
+          // Create order record
+          await base44.entities.Order.create({
+            productId: product.id,
+            productName: product.name,
+            productImage: product.images?.[0] || null,
+            quantity: quantity,
+            totalPrice: parseFloat(totalPrice),
+            sellerWalletAddress: product.walletAddress,
+            buyerEmail: buyerWalletAddress || 'anonymous',
+            transactionId: response.data.txid,
+            status: 'completed'
+          });
+          
           // Show subtle notification
           const notif = document.createElement('div');
           notif.className = 'fixed bottom-6 right-6 bg-black/90 border border-[#49EACB]/30 rounded-lg p-4 shadow-2xl z-[9999] max-w-sm';
