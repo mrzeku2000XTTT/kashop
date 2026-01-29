@@ -43,9 +43,9 @@ export default function Home() {
           const decoded = jwtDecode(token);
           console.log('Decoded token:', decoded);
           
-          // Keystone user has email, we'll use that as identifier
+          // Keystone user has email and address
           if (decoded.email) {
-            setWalletAddress(decoded.email);
+            setWalletAddress(decoded.address || decoded.email);
             setUserEmail(decoded.email);
           }
         } catch (error) {
@@ -63,7 +63,7 @@ export default function Home() {
           try {
             const decoded = jwtDecode(storedToken);
             if (decoded.email) {
-              setWalletAddress(decoded.email);
+              setWalletAddress(decoded.address || decoded.email);
               setUserEmail(decoded.email);
             }
           } catch (error) {
@@ -105,7 +105,6 @@ export default function Home() {
 
     try {
       window.KasperoPay.connect({
-        merchant: 'kpm_vx7c48go',
         onConnect: function(user) {
           console.log('✅ Wallet connected!', user);
           if (user && user.address) {
@@ -139,12 +138,26 @@ export default function Home() {
       if (window.KasperoPay && window.KasperoPay.disconnect) {
         window.KasperoPay.disconnect();
       }
+      // Clear ALL localStorage items related to wallet/auth
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('kp_token');
+      localStorage.removeItem('kp_wallet');
+      localStorage.removeItem('walletType');
+      localStorage.removeItem('user');
+      
       setWalletAddress(null);
       setUserEmail(null);
     } catch (error) {
       console.error('Disconnect error:', error);
+      // Still clear storage even if disconnect fails
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('kp_token');
+      localStorage.removeItem('kp_wallet');
+      localStorage.removeItem('walletType');
+      localStorage.removeItem('user');
+      
       setWalletAddress(null);
       setUserEmail(null);
     }
@@ -157,13 +170,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white overflow-hidden">
-      {/* KasperoPay widget container */}
-      <div 
-        id="kaspero-pay-button"
-        data-merchant="kpm_vx7c48go"
-        style={{ display: 'none' }}
-      />
-
       {/* Gradient background effects */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#49EACB]/5 rounded-full blur-[120px]" />

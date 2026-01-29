@@ -56,6 +56,7 @@ import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import StoreManagement from './pages/StoreManagement';
 import StoreProducts from './pages/StoreProducts';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -73,4 +74,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "Home",
     Pages: PAGES,
+    Layout: __Layout,
 };

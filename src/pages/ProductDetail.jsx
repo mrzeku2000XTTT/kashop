@@ -32,14 +32,7 @@ export default function ProductDetail() {
       }
     }
 
-    // Load KasperoPay widget script if not already loaded
-    if (!document.getElementById('kaspero-pay-script')) {
-      const script = document.createElement('script');
-      script.id = 'kaspero-pay-script';
-      script.src = 'https://kaspa-store.com/pay/widget.js';
-      script.async = true;
-      document.body.appendChild(script);
-    }
+
   }, []);
 
   const { data: product, isLoading } = useQuery({
@@ -113,13 +106,6 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Hidden KasperoPay widget container - required for initialization */}
-      <div 
-        id="kaspero-pay-button"
-        data-merchant="kpm_hocgtdnj"
-        style={{ display: 'none' }}
-      />
-      
       <header className="border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <Button
