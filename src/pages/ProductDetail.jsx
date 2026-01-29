@@ -16,6 +16,8 @@ export default function ProductDetail() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [buyerWalletAddress, setBuyerWalletAddress] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationStartTime, setVerificationStartTime] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -62,6 +64,36 @@ export default function ProductDetail() {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     alert('Address copied to clipboard!');
+  };
+
+  const handleStartVerification = async () => {
+    const timestamp = Date.now();
+    setVerificationStartTime(timestamp);
+    setIsVerifying(true);
+
+    const checkTransaction = async () => {
+      try {
+        const response = await base44.functions.invoke('verifyKaspaTransaction', {
+          address: product.walletAddress,
+          expectedAmount: parseFloat(totalPrice),
+          timestamp: timestamp
+        });
+
+        if (response.data?.verified) {
+          setIsVerifying(false);
+          alert(`✅ Payment verified! Transaction ID: ${response.data.txid}`);
+          setShowPaymentModal(false);
+          navigate('/');
+        } else {
+          setTimeout(checkTransaction, 3000); // Poll every 3 seconds
+        }
+      } catch (err) {
+        console.error('Verification error:', err);
+        setTimeout(checkTransaction, 3000);
+      }
+    };
+
+    checkTransaction();
   };
 
   if (isLoading || !product) {
@@ -190,55 +222,92 @@ export default function ProductDetail() {
       </div>
 
       {/* Payment Modal */}
-      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+      <Dialog open={showPaymentModal} onOpenChange={(open) => {
+        if (!isVerifying) {
+          setShowPaymentModal(open);
+        }
+      }}>
         <DialogContent className="bg-[#1a1a1a] border-white/10 text-white max-w-md">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Complete Payment</h2>
-              <button
-                onClick={() => setShowPaymentModal(false)}
-                className="text-white/60 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {!isVerifying && (
+                <button
+                  onClick={() => setShowPaymentModal(false)}
+                  className="text-white/60 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
-              <div>
-                <p className="text-white/60 text-sm mb-2">Product</p>
-                <p className="text-white font-semibold">{product.name} (x{quantity})</p>
-              </div>
-
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-white/60 text-sm mb-2">Amount to Pay</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-[#49EACB]">{totalPrice}</span>
-                  <span className="text-xl text-white/60">KAS</span>
+            {!isVerifying ? (
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
+                <div>
+                  <p className="text-white/60 text-sm mb-2">Product</p>
+                  <p className="text-white font-semibold">{product.name} (x{quantity})</p>
                 </div>
-              </div>
 
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-white/60 text-sm mb-3">Send payment to seller's address:</p>
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                  <p className="text-white font-mono text-sm break-all mb-3">
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-white/60 text-sm mb-2">Amount to Pay</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-[#49EACB]">{totalPrice}</span>
+                    <span className="text-xl text-white/60">KAS</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-white/60 text-sm mb-3">Send payment to seller's address:</p>
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <p className="text-white font-mono text-sm break-all mb-3">
+                      {product.walletAddress}
+                    </p>
+                    <Button
+                      onClick={() => copyToClipboard(product.walletAddress)}
+                      className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold"
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy Address
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="bg-[#49EACB]/10 border border-[#49EACB]/20 rounded-lg p-4">
+                  <p className="text-[#49EACB] text-sm mb-3">
+                    📝 <strong>Instructions:</strong>
+                  </p>
+                  <ol className="text-white/60 text-xs space-y-1 list-decimal list-inside">
+                    <li>Copy the seller's address above</li>
+                    <li>Click "Start Verification" below</li>
+                    <li>Send exactly <strong className="text-[#49EACB]">{totalPrice} KAS</strong> from your wallet</li>
+                    <li>Wait for automatic verification</li>
+                  </ol>
+                </div>
+
+                <Button
+                  onClick={handleStartVerification}
+                  className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-6"
+                >
+                  Start Verification
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 border-4 border-[#49EACB]/30 border-t-[#49EACB] rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-[#49EACB] font-semibold text-lg mb-2">Waiting for Payment...</p>
+                <p className="text-white/60 text-sm mb-4">
+                  Send <strong>{totalPrice} KAS</strong> to the address below
+                </p>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-4">
+                  <p className="text-white text-xs font-mono break-all">
                     {product.walletAddress}
                   </p>
-                  <Button
-                    onClick={() => copyToClipboard(product.walletAddress)}
-                    className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold"
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy Address
-                  </Button>
                 </div>
-              </div>
-
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
-                <p className="text-yellow-500 text-sm">
-                  ⚠️ Please send exactly <strong>{totalPrice} KAS</strong> to the address above. After payment, contact the seller to confirm your order.
+                <p className="text-white/40 text-xs">
+                  Checking blockchain every 3 seconds...
                 </p>
               </div>
-            </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
