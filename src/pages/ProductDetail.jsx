@@ -46,8 +46,8 @@ export default function ProductDetail() {
   });
 
   const handleCheckout = () => {
-    if (!userWalletAddress) {
-      alert('Please connect your wallet first');
+    if (!product.walletAddress) {
+      alert('Seller wallet address not configured');
       return;
     }
 
@@ -60,34 +60,30 @@ export default function ProductDetail() {
   };
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(userWalletAddress);
+    navigator.clipboard.writeText(product.walletAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const checkPayment = async () => {
     const totalAmount = parseFloat((product.price * quantity).toFixed(8));
-    const timestamp = Date.now();
     setCheckingPayment(true);
 
     const pollTransaction = async () => {
       try {
-        const response = await base44.functions.invoke('verifyKaspaSelfTransaction', {
-          address: userWalletAddress,
-          expectedAmount: totalAmount,
-          timestamp: timestamp
+        const response = await base44.functions.invoke('checkKaspaPayment', {
+          address: product.walletAddress,
+          amount: totalAmount
         });
 
-        if (response.data?.verified) {
+        if (response.data?.success) {
           setPaymentConfirmed(true);
           setCheckingPayment(false);
-          alert(`✅ Payment verified! Transaction ID: ${response.data.txid}`);
-          setTimeout(() => navigate('/'), 2000);
         } else {
           setTimeout(pollTransaction, 3000); // Poll every 3 seconds
         }
       } catch (error) {
-        console.error('Verification error:', error);
+        console.error('Payment check error:', error);
         setTimeout(pollTransaction, 3000); // Continue polling on error
       }
     };
@@ -209,53 +205,63 @@ export default function ProductDetail() {
                   </Button>
                 ) : (
                   <div className="space-y-4">
-                    <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
-                      <p className="text-cyan-400 text-sm font-semibold mb-3">ZK Verification (iOS)</p>
-                      <p className="text-white/60 text-xs mb-4">Send {totalPrice} KAS to yourself in Kaspium to verify this purchase</p>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <p className="text-white/60 text-sm mb-2">Send exactly this amount:</p>
+                      <p className="text-2xl font-bold text-[#49EACB] mb-4">{totalPrice} KAS</p>
                       
-                      <div className="bg-white/5 rounded-lg p-3 mb-4">
-                        <p className="text-white/40 text-xs mb-1">Your Wallet Address</p>
-                        <div className="flex items-center gap-2">
-                          <code className="text-xs text-white/80 break-all flex-1 font-mono">
-                            {userWalletAddress}
-                          </code>
-                          <Button
-                            onClick={copyAddress}
-                            size="icon"
-                            variant="ghost"
-                            className="flex-shrink-0 text-white/60 hover:text-white"
-                          >
-                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg p-3">
-                        <ol className="text-white/60 text-xs space-y-1 list-decimal list-inside">
-                          <li>Copy your wallet address above</li>
-                          <li>Click "I Have Sent Payment"</li>
-                          <li>Open Kaspium and send {totalPrice} KAS to your own address</li>
-                          <li>Wait for automatic verification</li>
-                        </ol>
+                      <p className="text-white/60 text-sm mb-2">To seller's address:</p>
+                      <div className="flex items-center gap-2 bg-black/30 rounded-lg p-3">
+                        <code className="text-xs text-white/80 break-all flex-1 font-mono">
+                          {product.walletAddress}
+                        </code>
+                        <Button
+                          onClick={copyAddress}
+                          size="icon"
+                          variant="ghost"
+                          className="flex-shrink-0 text-white/60 hover:text-white"
+                        >
+                          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        </Button>
                       </div>
                     </div>
 
                     {paymentConfirmed ? (
-                      <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-center">
-                        <Check className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                        <p className="text-green-500 font-semibold">Payment Verified!</p>
-                        <p className="text-white/60 text-xs mt-1">Your purchase is confirmed</p>
+                      <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-6 space-y-3">
+                        <div className="text-center">
+                          <Check className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                          <p className="text-green-500 font-bold text-lg">Payment Confirmed!</p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3 space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-white/60">Amount:</span>
+                            <span className="text-white font-semibold">{totalPrice} KAS</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-white/60">Seller:</span>
+                            <code className="text-white/80 text-xs">{product.walletAddress.slice(0, 12)}...{product.walletAddress.slice(-8)}</code>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-white/60">Status:</span>
+                            <span className="text-green-500">Verified ✓</span>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => navigate('/')}
+                          className="w-full bg-green-500 hover:bg-green-600 text-black font-semibold"
+                        >
+                          Back to Home
+                        </Button>
                       </div>
                     ) : checkingPayment ? (
                       <div className="text-center py-6">
-                        <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4" />
-                        <p className="text-cyan-400 font-semibold mb-2">Waiting for Transaction...</p>
-                        <p className="text-white/60 text-sm">Send {totalPrice} KAS to yourself in Kaspium</p>
+                        <div className="w-16 h-16 border-4 border-[#49EACB]/30 border-t-[#49EACB] rounded-full animate-spin mx-auto mb-4" />
+                        <p className="text-[#49EACB] font-semibold mb-2">Waiting for Payment...</p>
+                        <p className="text-white/60 text-sm">Monitoring blockchain for {totalPrice} KAS</p>
                       </div>
                     ) : (
                       <Button
                         onClick={checkPayment}
-                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-4"
+                        className="w-full bg-[#49EACB] hover:bg-[#49EACB]/90 text-black font-semibold py-4"
                       >
                         I Have Sent Payment
                       </Button>
@@ -274,9 +280,8 @@ export default function ProductDetail() {
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-              <p className="text-white/60 text-sm mb-2">Payment Method</p>
-              <p className="text-white/80 text-xs">Zero-Knowledge Self-Send Verification</p>
-              <p className="text-white/40 text-xs mt-1">Seller receives: {product.walletAddress}</p>
+              <p className="text-white/60 text-sm mb-2">Seller's Kaspa Address</p>
+              <p className="text-white/80 text-xs font-mono break-all">{product.walletAddress}</p>
             </div>
           </div>
         </div>
