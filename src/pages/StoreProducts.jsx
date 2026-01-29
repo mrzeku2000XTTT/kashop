@@ -38,12 +38,18 @@ export default function StoreProducts() {
 
   const { data: storeData } = useQuery({
     queryKey: ['store', storeId],
-    queryFn: () => base44.entities.Store.get(storeId),
+    queryFn: async () => {
+      const store = await base44.entities.Store.get(storeId);
+      return store;
+    },
     enabled: !!storeId,
-    onSuccess: (data) => {
-      setStore(data);
-    }
   });
+
+  useEffect(() => {
+    if (storeData) {
+      setStore(storeData);
+    }
+  }, [storeData]);
 
   const { data: products = [] } = useQuery({
     queryKey: ['products', userEmail, storeId],
