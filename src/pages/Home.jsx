@@ -201,9 +201,9 @@ export default function Home() {
                transition={{ duration: 0.6, delay: 0.1 }}
                className="hidden md:flex items-center gap-8"
              >
-               <a href="#features" className="text-sm text-white/60 hover:text-white transition-colors">Features</a>
-               <a href="#about" className="text-sm text-white/60 hover:text-white transition-colors">About</a>
-               <a href="#docs" className="text-sm text-white/60 hover:text-white transition-colors">Docs</a>
+               <button onClick={() => navigate(createPageUrl('Features'))} className="text-sm text-white/60 hover:text-white transition-colors">Features</button>
+               <button onClick={() => navigate(createPageUrl('About'))} className="text-sm text-white/60 hover:text-white transition-colors">About</button>
+               <button onClick={() => navigate(createPageUrl('Docs'))} className="text-sm text-white/60 hover:text-white transition-colors">Docs</button>
                <button onClick={() => navigate(createPageUrl('KCbridge'))} className="text-sm text-white/60 hover:text-white transition-colors">KCbridge</button>
              </motion.div>
 
