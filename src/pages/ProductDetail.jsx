@@ -6,6 +6,7 @@ import { ArrowLeft, Package, Copy, Check, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createPageUrl } from '../utils';
+import { jwtDecode } from 'jwt-decode';
 
 export default function ProductDetail() {
   const navigate = useNavigate();
@@ -16,11 +17,23 @@ export default function ProductDetail() {
   const [copied, setCopied] = useState(false);
   const [checkingPayment, setCheckingPayment] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [userWalletAddress, setUserWalletAddress] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     setProductId(id);
+
+    // Get user's wallet address from token
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserWalletAddress(decoded.address);
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+      }
+    }
   }, []);
 
   const { data: product, isLoading } = useQuery({
@@ -33,8 +46,8 @@ export default function ProductDetail() {
   });
 
   const handleCheckout = () => {
-    if (!product.walletAddress) {
-      alert('Seller wallet address not configured');
+    if (!userWalletAddress) {
+      alert('Please connect your wallet first');
       return;
     }
 
@@ -47,35 +60,39 @@ export default function ProductDetail() {
   };
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(product.walletAddress);
+    navigator.clipboard.writeText(userWalletAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const checkPayment = async () => {
+    const totalAmount = parseFloat((product.price * quantity).toFixed(8));
+    const timestamp = Date.now();
     setCheckingPayment(true);
-    
-    try {
-      const totalAmount = parseFloat((product.price * quantity).toFixed(8));
-      
-      const response = await base44.functions.invoke('checkKaspaPayment', {
-        address: product.walletAddress,
-        amount: totalAmount
-      });
 
-      if (response.data.success) {
-        setPaymentConfirmed(true);
-        setCheckingPayment(false);
-        alert(`Payment confirmed! Transaction ID: ${response.data.txid}`);
-        setTimeout(() => navigate('/'), 2000);
-      } else {
-        setCheckingPayment(false);
-        alert('Payment not found yet. Please wait a moment and try again.');
+    const pollTransaction = async () => {
+      try {
+        const response = await base44.functions.invoke('verifyKaspaSelfTransaction', {
+          address: userWalletAddress,
+          expectedAmount: totalAmount,
+          timestamp: timestamp
+        });
+
+        if (response.data?.verified) {
+          setPaymentConfirmed(true);
+          setCheckingPayment(false);
+          alert(`✅ Payment verified! Transaction ID: ${response.data.txid}`);
+          setTimeout(() => navigate('/'), 2000);
+        } else {
+          setTimeout(pollTransaction, 3000); // Poll every 3 seconds
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        setTimeout(pollTransaction, 3000); // Continue polling on error
       }
-    } catch (error) {
-      setCheckingPayment(false);
-      alert('Error checking payment: ' + error.message);
-    }
+    };
+
+    pollTransaction();
   };
 
   if (isLoading || !product) {
@@ -192,45 +209,55 @@ export default function ProductDetail() {
                   </Button>
                 ) : (
                   <div className="space-y-4">
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                      <p className="text-white/60 text-sm mb-2">Send exactly this amount:</p>
-                      <p className="text-2xl font-bold text-[#49EACB] mb-4">{totalPrice} KAS</p>
+                    <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
+                      <p className="text-cyan-400 text-sm font-semibold mb-3">ZK Verification (iOS)</p>
+                      <p className="text-white/60 text-xs mb-4">Send {totalPrice} KAS to yourself in Kaspium to verify this purchase</p>
                       
-                      <p className="text-white/60 text-sm mb-2">To this address:</p>
-                      <div className="flex items-center gap-2 bg-black/30 rounded-lg p-3">
-                        <code className="text-xs text-white/80 break-all flex-1 font-mono">
-                          {product.walletAddress}
-                        </code>
-                        <Button
-                          onClick={copyAddress}
-                          size="icon"
-                          variant="ghost"
-                          className="flex-shrink-0 text-white/60 hover:text-white"
-                        >
-                          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        </Button>
+                      <div className="bg-white/5 rounded-lg p-3 mb-4">
+                        <p className="text-white/40 text-xs mb-1">Your Wallet Address</p>
+                        <div className="flex items-center gap-2">
+                          <code className="text-xs text-white/80 break-all flex-1 font-mono">
+                            {userWalletAddress}
+                          </code>
+                          <Button
+                            onClick={copyAddress}
+                            size="icon"
+                            variant="ghost"
+                            className="flex-shrink-0 text-white/60 hover:text-white"
+                          >
+                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg p-3">
+                        <ol className="text-white/60 text-xs space-y-1 list-decimal list-inside">
+                          <li>Copy your wallet address above</li>
+                          <li>Click "I Have Sent Payment"</li>
+                          <li>Open Kaspium and send {totalPrice} KAS to your own address</li>
+                          <li>Wait for automatic verification</li>
+                        </ol>
                       </div>
                     </div>
 
                     {paymentConfirmed ? (
                       <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-center">
                         <Check className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                        <p className="text-green-500 font-semibold">Payment Confirmed!</p>
+                        <p className="text-green-500 font-semibold">Payment Verified!</p>
+                        <p className="text-white/60 text-xs mt-1">Your purchase is confirmed</p>
+                      </div>
+                    ) : checkingPayment ? (
+                      <div className="text-center py-6">
+                        <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4" />
+                        <p className="text-cyan-400 font-semibold mb-2">Waiting for Transaction...</p>
+                        <p className="text-white/60 text-sm">Send {totalPrice} KAS to yourself in Kaspium</p>
                       </div>
                     ) : (
                       <Button
                         onClick={checkPayment}
-                        disabled={checkingPayment}
-                        className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold py-4"
+                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-4"
                       >
-                        {checkingPayment ? (
-                          <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            Checking Payment...
-                          </>
-                        ) : (
-                          'I Have Sent Payment'
-                        )}
+                        I Have Sent Payment
                       </Button>
                     )}
 
@@ -246,12 +273,11 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {product.walletAddress && (
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                <p className="text-white/60 text-sm mb-2">Payment goes to seller</p>
-                <p className="text-white/40 text-xs font-mono break-all">{product.walletAddress}</p>
-              </div>
-            )}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <p className="text-white/60 text-sm mb-2">Payment Method</p>
+              <p className="text-white/80 text-xs">Zero-Knowledge Self-Send Verification</p>
+              <p className="text-white/40 text-xs mt-1">Seller receives: {product.walletAddress}</p>
+            </div>
           </div>
         </div>
       </div>
