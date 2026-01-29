@@ -118,7 +118,7 @@ export default function ProductDetail() {
       {/* Hidden KasperoPay widget container - required for initialization */}
       <div 
         id="kaspero-pay-button"
-        data-merchant="kpm_vx7c48go"
+        data-merchant="kpm_hocgtdnj"
         style={{ display: 'none' }}
       />
       
