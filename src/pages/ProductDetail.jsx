@@ -78,9 +78,7 @@ export default function ProductDetail() {
       window.KasperoPay.pay({
         amount: totalAmount,
         item: `${product.name} (x${quantity})`,
-        to: product.walletAddress,
-        style: 'dark',
-        wallets: 'kasware,kastle,keystone,mobile,kasanova,qrcode'
+        style: 'dark'
       });
 
       // Listen for payment completion (set once)
