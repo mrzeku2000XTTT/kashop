@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Upload } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -13,9 +14,19 @@ export default function ProductForm({ onSubmit, onCancel, isLoading, initialData
     stock: '0',
     category: '',
     images: [],
-    walletAddress: ''
+    walletAddress: '',
+    isAICredit: false,
+    creditsAmount: ''
   });
   const [uploading, setUploading] = useState(false);
+
+  const categories = [
+    'Physical Products',
+    'Digital Products',
+    'AI/API Keys',
+    'Services',
+    'NFTs/Digital Assets'
+  ];
 
   const handleImageUpload = async (e) => {
     const files = e.target.files;
@@ -80,12 +91,18 @@ export default function ProductForm({ onSubmit, onCancel, isLoading, initialData
           </div>
           <div>
             <label className="text-white text-sm font-medium block mb-2">Category</label>
-            <Input
-              value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-              placeholder="e.g. Electronics"
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11"
-            />
+            <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value, isAICredit: value === 'AI/API Keys' ? prev.isAICredit : false }))}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-white h-11">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1a1a] border-white/10">
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat} className="text-white hover:bg-white/10">
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -133,6 +150,35 @@ export default function ProductForm({ onSubmit, onCancel, isLoading, initialData
           />
           <p className="text-white/40 text-xs mt-2">Enter your Kaspa wallet address to receive payments</p>
         </div>
+
+        {formData.category === 'AI/API Keys' && (
+          <div className="bg-white/5 border border-[#49EACB]/30 rounded-lg p-4 space-y-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="isAICredit"
+                checked={formData.isAICredit}
+                onChange={(e) => setFormData(prev => ({ ...prev, isAICredit: e.target.checked }))}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <label htmlFor="isAICredit" className="text-white text-sm font-medium cursor-pointer">
+                This is an AI Credit Package
+              </label>
+            </div>
+            {formData.isAICredit && (
+              <div>
+                <label className="text-white text-sm font-medium block mb-2">Number of AI Credits</label>
+                <Input
+                  type="number"
+                  value={formData.creditsAmount}
+                  onChange={(e) => setFormData(prev => ({ ...prev, creditsAmount: e.target.value }))}
+                  placeholder="e.g. 1000"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11"
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         <div>
           <label className="text-white text-sm font-medium block mb-3">Product Images *</label>
