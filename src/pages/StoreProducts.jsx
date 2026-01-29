@@ -93,6 +93,7 @@ export default function StoreProducts() {
           stock: parseFloat(formData.stock) || 0,
           category: formData.category,
           images: formData.images,
+          walletAddress: formData.walletAddress,
         }
       });
     } else {
@@ -105,6 +106,7 @@ export default function StoreProducts() {
         images: formData.images,
         ownerEmail: userEmail,
         storeId,
+        walletAddress: formData.walletAddress,
       });
     }
   };
@@ -163,7 +165,8 @@ export default function StoreProducts() {
               price: editingProduct.price.toString(),
               stock: (editingProduct.stock || 0).toString(),
               category: editingProduct.category || '',
-              images: editingProduct.images || []
+              images: editingProduct.images || [],
+              walletAddress: editingProduct.walletAddress || ''
             } : null}
           />
         )}

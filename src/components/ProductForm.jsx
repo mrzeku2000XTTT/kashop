@@ -12,7 +12,8 @@ export default function ProductForm({ onSubmit, onCancel, isLoading, initialData
     price: '',
     stock: '0',
     category: '',
-    images: []
+    images: [],
+    walletAddress: ''
   });
   const [uploading, setUploading] = useState(false);
 
@@ -54,6 +55,10 @@ export default function ProductForm({ onSubmit, onCancel, isLoading, initialData
     }
     if (formData.images.length === 0) {
       alert('Add at least one product image');
+      return;
+    }
+    if (!formData.walletAddress || !formData.walletAddress.trim()) {
+      alert('Kaspa wallet address is required');
       return;
     }
     onSubmit(formData);
@@ -116,6 +121,17 @@ export default function ProductForm({ onSubmit, onCancel, isLoading, initialData
               className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="text-white text-sm font-medium block mb-2">Kaspa Wallet Address *</label>
+          <Input
+            value={formData.walletAddress || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, walletAddress: e.target.value }))}
+            placeholder="kaspa:..."
+            className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11 font-mono text-sm"
+          />
+          <p className="text-white/40 text-xs mt-2">Enter your Kaspa wallet address to receive payments</p>
         </div>
 
         <div>
