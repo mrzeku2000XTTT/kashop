@@ -9,10 +9,13 @@ import { createPageUrl } from '../utils';
 export default function Products() {
   const navigate = useNavigate();
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: allProducts = [], isLoading } = useQuery({
     queryKey: ['all-products'],
     queryFn: () => base44.entities.Product.list(),
   });
+
+  // Filter out sold out products
+  const products = allProducts.filter(product => (product.stock || 0) > 0);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">

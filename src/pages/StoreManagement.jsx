@@ -38,11 +38,14 @@ export default function StoreManagement() {
     enabled: !!userEmail,
   });
 
-  const { data: products = [] } = useQuery({
+  const { data: allProducts = [] } = useQuery({
     queryKey: ['products', userEmail, selectedStore?.id],
     queryFn: () => base44.entities.Product.filter({ ownerEmail: userEmail, storeId: selectedStore.id }),
     enabled: !!userEmail && !!selectedStore?.id,
   });
+
+  // Filter out sold out products
+  const products = allProducts.filter(product => (product.stock || 0) > 0);
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Store.create(data),
