@@ -65,6 +65,7 @@ export default function StoreManagement() {
     createMutation.mutate({
       name: data.name,
       description: data.description,
+      coverImage: data.coverImage,
       storeType: data.storeType,
       country: data.country,
       city: data.city,
