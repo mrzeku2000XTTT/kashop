@@ -38,6 +38,12 @@ export default function StoreManagement() {
     enabled: !!userEmail,
   });
 
+  const { data: products = [] } = useQuery({
+    queryKey: ['products', userEmail, selectedStore?.id],
+    queryFn: () => base44.entities.Product.filter({ ownerEmail: userEmail, storeId: selectedStore.id }),
+    enabled: !!userEmail && !!selectedStore?.id,
+  });
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Store.create(data),
     onSuccess: (newStore) => {
@@ -119,9 +125,41 @@ export default function StoreManagement() {
               </Button>
             </div>
 
-            <div className="text-center py-12 text-white/40">
-              <p>No products yet. Create your first product to get started.</p>
-            </div>
+            {products.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map(product => (
+                  <div
+                    key={product.id}
+                    onClick={() => navigate(createPageUrl('StoreProducts') + `?storeId=${selectedStore.id}`)}
+                    className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-[#49EACB]/30 transition cursor-pointer group"
+                  >
+                    {product.images && product.images.length > 0 ? (
+                      <div className="relative w-full h-48 overflow-hidden bg-white/5">
+                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                      </div>
+                    ) : (
+                      <div className="w-full h-48 bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center">
+                        <Package className="w-12 h-12 text-white/30" />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-white mb-2">{product.name}</h3>
+                      {product.description && (
+                        <p className="text-white/60 text-sm line-clamp-2 mb-3">{product.description}</p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className="text-[#49EACB] font-semibold">{product.price} KAS</span>
+                        <span className="text-white/50 text-sm">Stock: {product.stock || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-white/40">
+                <p>No products yet. Create your first product to get started.</p>
+              </div>
+            )}
 
             <Button
               onClick={() => deleteMutation.mutate(selectedStore.id)}
